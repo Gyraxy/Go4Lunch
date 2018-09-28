@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- AUTHENTIFICATION -->
+    <dimen name="logo_width">400dp</dimen>
+    <dimen name="auth_app_title">130sp</dimen>
+    <dimen name="auth_app_subtitle">23sp</dimen>
+    <dimen name="auth_login_button_width">500dp</dimen>
+    <dimen name="auth_login_button_height">100dp</dimen>
+
 </resources>

@@ -1,8 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/auth_background"
+    tools:context="com.duboscq.nicolas.go4lunch.controllers.activities.AuthActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <ImageView
+            android:layout_width="@dimen/logo_width"
+            android:layout_height="@dimen/logo_width"
+            android:src="@drawable/home_icon"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="@dimen/auth_app_title"
+            android:textStyle="bold"
+            android:textColor="@color/WhiteColor"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/auth_subtitle"
+            android:textSize="@dimen/auth_app_subtitle"
+            android:textStyle="italic"
+            android:padding="5dp"
+            android:textColor="@color/WhiteColor"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/login_facebook_imv"
+            android:layout_width="@dimen/auth_login_button_width"
+            android:layout_height="@dimen/auth_login_button_height"
+            android:src="@drawable/facebook_login"
+            android:clickable="true"/>
+
+        <ImageView
+            android:id="@+id/login_google_imv"
+            android:layout_width="@dimen/auth_login_button_width"
+            android:layout_height="@dimen/auth_login_button_height"
+            android:layout_marginTop="25dp"
+            android:src="@drawable/google_login"
+            android:clickable="true"/>
+
+    </LinearLayout>
 
 </LinearLayout>
