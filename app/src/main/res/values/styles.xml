@@ -26,4 +26,15 @@
         <item name="android:textColorHint">@android:color/white</item>
     </style>
 
+    <!-- TOOLBAR THEME -->
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- Color of the title text in the Toolbar  -->
+        <item name="android:textColorPrimary">@color/WhiteColor</item>
+    </style>
+
+    <!-- TOOLBAR TITLE THEME  -->
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>

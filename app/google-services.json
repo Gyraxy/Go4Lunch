@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "729802141165-d2cu9n78lreecn660bcifpvh003bbagb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.duboscq.nicolas.go4lunch",
+            "certificate_hash": "990c5048b13c7566c84f4d3706c6191aa1e38dd3"
+          }
+        },
+        {
           "client_id": "729802141165-lo8r4dicj0dg7s0oavhhccvummfgtufe.apps.googleusercontent.com",
           "client_type": 3
         }

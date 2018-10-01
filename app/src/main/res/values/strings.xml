@@ -10,4 +10,16 @@
     <string name="facebook_application_id" translatable="false">280804142565240</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb280804142565240</string>
 
+    <!-- NAVIGATION DRAWER -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="drawer_your_lunch">YOUR LUNCH</string>
+    <string name="drawer_settings">SETTINGS</string>
+    <string name="drawer_logout">LOGOUT</string>
+    <string name="drawer_no_email_found">No email found</string>
+    <string name="drawer_no_username_found">No Username found</string>
+
+    <!-- TOOLBAR -->
+    <string name="toolbar_title">I\'m Hungry !</string>
+
 </resources>

@@ -14,11 +14,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -45,6 +48,11 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     //ACTIONS
@@ -111,6 +119,8 @@ public class AuthActivity extends AppCompatActivity {
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
-    protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
-
+    protected Boolean isCurrentUserLogged(){
+        return (
+            this.getCurrentUser() != null);
+    }
 }
