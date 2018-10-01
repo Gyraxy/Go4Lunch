@@ -13,18 +13,26 @@
     android:id="@+id/activity_main_drawer">
 
     <!-- 1 | MainActivity RootView -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <!-- Toolbar -->
+        <!-- Toolbar -->
         <include
             layout="@layout/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-    </LinearLayout>
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/activity_main_nav_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="?android:attr/windowBackground"
+            app:menu="@menu/bottom_navigation" />
+
+    </RelativeLayout>
 
 
     <android.support.design.widget.NavigationView
@@ -35,6 +43,5 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/activity_main_nav_header"
         app:menu="@menu/menu_drawer" />
-
 
 </android.support.v4.widget.DrawerLayout>

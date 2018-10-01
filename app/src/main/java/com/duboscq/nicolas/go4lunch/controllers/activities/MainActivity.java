@@ -3,6 +3,7 @@ package com.duboscq.nicolas.go4lunch.controllers.activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,10 +26,11 @@ import butterknife.ButterKnife;
  * Created by Nicolas DUBOSCQ on 27/09/2018
  */
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     //FOR DESIGN
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.activity_main_nav_bottom) BottomNavigationView bottomNavigationView;
     @BindView(R.id.activity_main_drawer) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
 
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
+        configureBottomOnClick();
     }
 
     // ---------------------
@@ -63,6 +66,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void configureNavigationView(){
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void configureBottomOnClick() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.bottom_nav_map:
+                        return true;
+                    case R.id.bottom_nav_list_view:
+                        return true;
+                    case R.id.bottom_nav_workmates:
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override

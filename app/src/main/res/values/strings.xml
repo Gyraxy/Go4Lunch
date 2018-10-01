@@ -22,4 +22,9 @@
     <!-- TOOLBAR -->
     <string name="toolbar_title">I\'m Hungry !</string>
 
+    <!-- BOTTOM NAVIGATION -->
+    <string name="bottom_nav_map_view">Map View</string>
+    <string name="bottom_nav_list_view">List View</string>
+    <string name="bottom_nav_workmates">Wormates</string>
+
 </resources>
