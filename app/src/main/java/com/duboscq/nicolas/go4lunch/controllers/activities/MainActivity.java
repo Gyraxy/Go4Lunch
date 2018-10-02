@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
 
 
+
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
 
@@ -49,13 +50,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureBottomOnClick();
     }
 
-    // ---------------------
+    // -------------
     // CONFIGURATION
-    // ---------------------
+    // -------------
+
+    // TOOLBAR
 
     private void configureToolBar(){
         toolbar.setTitle(R.string.toolbar_title);
         setSupportActionBar(toolbar);
+    }
+
+    // NAVIGATION DRAWER
+
+    private void configureNavigationView(){
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void configureDrawerLayout(){
@@ -64,9 +73,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
-    private void configureNavigationView(){
-        navigationView.setNavigationItemSelectedListener(this);
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.activity_main_your_lunch:
+                break;
+            case R.id.activity_main_settings:
+                break;
+            case R.id.activity_main_logout:
+                signOutUserFromFirebase();
+                Toast.makeText(getApplicationContext(),getString(R.string.auth_loggout),Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
+        this.drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    // BOTTOM MENU
 
     private void configureBottomOnClick() {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -86,37 +121,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            this.drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.activity_main_your_lunch:
-                break;
-            case R.id.activity_main_settings:
-                break;
-            case R.id.activity_main_logout:
-                signOutUserFromFirebase();
-                Toast.makeText(this,"You have logout.",Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                break;
-        }
-            this.drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-    }
-
-    // --------------------
-    // UI
-    // --------------------
+    // ----
+    //  UI
+    // ----
 
     private void signOutUserFromFirebase() {
         AuthUI.getInstance()
@@ -139,9 +147,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
     }
 
-    // --------------------
+    // -----
     // UTILS
-    // --------------------
+    // -----
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
