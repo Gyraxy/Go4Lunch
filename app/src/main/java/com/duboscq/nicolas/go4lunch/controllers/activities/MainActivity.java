@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,6 +16,9 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
+import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
+import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerLayout();
         configureNavigationView();
         configureBottomOnClick();
+        initMapViewFragment();
     }
 
     // -------------
@@ -110,10 +116,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.bottom_nav_map:
+                        initMapViewFragment();
                         return true;
                     case R.id.bottom_nav_list_view:
+                        initRestaurantFragment();
                         return true;
                     case R.id.bottom_nav_workmates:
+                        initWorkmatesFragment();
                         return true;
                 }
                 return false;
@@ -121,6 +130,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    //--------
+    //FRAGMENT
+    //--------
+
+    private void initMapViewFragment() {
+        MapViewFragment mapViewFragment = new MapViewFragment();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_activity_frame_layout, mapViewFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void initRestaurantFragment() {
+        RestaurantFragment restaurantFragment = new RestaurantFragment();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_activity_frame_layout,restaurantFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void initWorkmatesFragment() {
+        WorkmatesFragment workmatesFragment = new WorkmatesFragment();
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.main_activity_frame_layout,workmatesFragment);
+        fragmentTransaction.commit();
+    }
 
     // ----
     //  UI

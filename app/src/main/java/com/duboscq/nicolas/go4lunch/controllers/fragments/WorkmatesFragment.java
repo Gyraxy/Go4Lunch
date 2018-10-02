@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 
 import com.duboscq.nicolas.go4lunch.R;
 
-public class MapViewFragment extends Fragment {
+public class WorkmatesFragment extends Fragment {
 
-    public MapViewFragment() { }
+    public WorkmatesFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class MapViewFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map_view, container, false);
+        return inflater.inflate(R.layout.fragment_workmates, container, false);
     }
 
     @Override

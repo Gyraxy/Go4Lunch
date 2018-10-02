@@ -25,13 +25,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <fragment
+        <FrameLayout
             android:id="@+id/main_activity_frame_layout"
-            android:layout_marginTop="56dp"
-            android:layout_marginBottom="56dp"
+            android:layout_below="@id/toolbar"
+            android:layout_above="@+id/activity_main_nav_bottom"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment"/>
+            android:layout_height="match_parent"/>
 
 
         <android.support.design.widget.BottomNavigationView
