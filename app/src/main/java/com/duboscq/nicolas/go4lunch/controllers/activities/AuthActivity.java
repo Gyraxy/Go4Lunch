@@ -1,17 +1,22 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -31,6 +36,7 @@ public class AuthActivity extends AppCompatActivity {
 
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
+    private static final int SIGN_OUT_TASK = 10;
 
 
     @Override
@@ -43,21 +49,7 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (isCurrentUserLogged()) {
-            for (UserInfo user : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-                if (user.getProviderId().equals("facebook.com")) {
-                    login_facebook_btn.setImageResource(R.drawable.facebook_logged);
-                }
-            }
-            for (UserInfo user : FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
-                if (user.getProviderId().equals("google.com")) {
-                    login_google_btn.setImageResource(R.drawable.google_logged);
-                }
-            }
-        } else {
-            login_facebook_btn.setImageResource(R.drawable.facebook_login);
-            login_google_btn.setImageResource(R.drawable.google_login);
-        }
+        logoUpdate();
     }
 
     @Override
@@ -70,18 +62,26 @@ public class AuthActivity extends AppCompatActivity {
 
     @OnClick(R.id.login_facebook_imv)
     public void onClickFacebookLogin() {
-        if (isCurrentUserLogged()){
+        if (checkProviderLogged().equals("facebook")){
             startMainActivity();
-        } else {
+        } else if (checkProviderLogged().equals("google")) {
+            signOutUserFromFirebase();
+            startSignInFacebook();
+        }
+        else {
             startSignInFacebook();
         }
     }
 
     @OnClick(R.id.login_google_imv)
     public void onClickGoogleLogin() {
-        if (isCurrentUserLogged()){
+        if (checkProviderLogged().equals("google")){
             startMainActivity();
-        } else {
+        } else if (checkProviderLogged().equals("facebook")) {
+            signOutUserFromFirebase();
+            startSignInGooglePlus();
+        }
+        else {
             startSignInGooglePlus();
         }
     }
@@ -97,6 +97,24 @@ public class AuthActivity extends AppCompatActivity {
 
     private void showSnackBar(LinearLayout linearLayout, String message){
         Snackbar.make(linearLayout, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void logoUpdate(){
+        String provider = checkProviderLogged();
+        switch (provider) {
+            case "facebook":
+                login_google_btn.setImageResource(R.drawable.google_login);
+                login_facebook_btn.setImageResource(R.drawable.facebook_logged);
+                break;
+            case "google":
+                login_facebook_btn.setImageResource(R.drawable.facebook_login);
+                login_google_btn.setImageResource(R.drawable.google_logged);
+                break;
+            default:
+                login_facebook_btn.setImageResource(R.drawable.facebook_login);
+                login_google_btn.setImageResource(R.drawable.google_login);
+                break;
+        }
     }
 
     // ----------------
@@ -130,12 +148,24 @@ public class AuthActivity extends AppCompatActivity {
                 RC_SIGN_IN);
     }
 
+    private String checkProviderLogged(){
+        if (isCurrentUserLogged()){
+            if (FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getProviderId().equals("google.com")){
+                return "google";
+            } else if (FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getProviderId().equals("facebook.com")) {
+                return "facebook";
+            } else return "null";
+        } else return "null";
+    }
+
     // --------------------
     // UTILS
     // --------------------
 
     @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+    protected FirebaseUser getCurrentUser(){
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
 
     protected Boolean isCurrentUserLogged(){
         return (
@@ -159,5 +189,25 @@ public class AuthActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void signOutUserFromFirebase() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+    }
+
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                switch (origin) {
+                    case SIGN_OUT_TASK:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
     }
 }

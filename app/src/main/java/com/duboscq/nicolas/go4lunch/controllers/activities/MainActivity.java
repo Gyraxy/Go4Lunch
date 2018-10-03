@@ -219,6 +219,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-    protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
 }
