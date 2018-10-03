@@ -13,8 +13,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
+    private ImageView profile_imv;
+    TextView profile_name_txt,profile_email_txt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureNavigationView();
         configureBottomOnClick();
         initMapViewFragment();
+        updateProfileData();
     }
 
     // -------------
@@ -162,6 +170,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //  UI
     // ----
 
+    private void updateProfileData() {
+
+        View nav_header = navigationView.getHeaderView(0);
+        profile_name_txt = nav_header.findViewById(R.id.nav_header_profile_name_txt);
+        profile_email_txt = nav_header.findViewById(R.id.nav_header_profile_email_txt);
+        profile_imv = nav_header.findViewById(R.id.nav_header_profile_imv);
+
+        if (this.getCurrentUser().getPhotoUrl() != null) {
+            Glide.with(this)
+                    .load(this.getCurrentUser().getPhotoUrl())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(profile_imv);
+        }
+
+        if (this.getCurrentUser() != null) {
+            String username = getCurrentUser().getDisplayName();
+            String usermail = getCurrentUser().getEmail();
+            profile_name_txt.setText(username);
+            profile_email_txt.setText(usermail);
+        }
+    }
+
+    // -----
+    // UTILS
+    // -----
+
     private void signOutUserFromFirebase() {
         AuthUI.getInstance()
                 .signOut(this)
@@ -182,10 +216,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         };
     }
-
-    // -----
-    // UTILS
-    // -----
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
