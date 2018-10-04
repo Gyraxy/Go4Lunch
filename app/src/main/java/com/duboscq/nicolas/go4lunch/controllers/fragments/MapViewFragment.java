@@ -1,6 +1,5 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,27 +7,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
-import com.duboscq.nicolas.go4lunch.controllers.activities.MapsActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class MapViewFragment extends Fragment {
-
-    MapView mapView;
-    GoogleMap map;
+public class MapViewFragment extends Fragment implements OnMapReadyCallback,GoogleMap.OnMyLocationButtonClickListener{
 
     public MapViewFragment() { }
 
-    @BindView(R.id.button)
-    Button button;
+    private GoogleMap mMap;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +32,9 @@ public class MapViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_view);
+        mapFragment.getMapAsync(this);
         return view;
     }
 
@@ -48,10 +44,17 @@ public class MapViewFragment extends Fragment {
 
     }
 
-    @OnClick(R.id.button)
-    public void onClickButton(){
-        Toast.makeText(getContext(),"OK",Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(getContext(), MapsActivity.class);
-        startActivity(i);
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        LatLng Paris = new LatLng(48.864716, 2.349014);
+        mMap.addMarker(new MarkerOptions().position(Paris).title("PARIS")).showInfoWindow();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Paris, 1));
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
     }
 }

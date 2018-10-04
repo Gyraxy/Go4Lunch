@@ -3,6 +3,9 @@
     <!-- APPLICATION -->
     <string name="app_name">Go4Lunch</string>
 
+    <!-- MAIN ACTIVITY -->
+    <string name="search">Search</string>
+
     <!-- LOGIN ACTIVITY -->
     <string name="auth_subtitle">Find a nice restaurant and invite your co-workers for lunch !</string>
     <string name="error_not_connected">Vous devez vous connecter !</string>
@@ -15,6 +18,10 @@
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_application_id" translatable="false">280804142565240</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb280804142565240</string>
+
+    <!-- TWITTER PURPOSE -->
+    <string name="twitter_consumer_key" translatable="false">nymgTJBB9sLSWTTLGeWu2Up8a</string>
+    <string name="twitter_consumer_secret" translatable="false">YaSkN6Aj9rI2XmFp9M72Q9Om3Uyiw2f2CUJaZfwJ90yvFNfvX9x</string>
 
     <!-- NAVIGATION DRAWER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
