@@ -23,12 +23,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
-import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -136,9 +134,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.bottom_nav_map:
+                        toolbar.setTitle(R.string.toolbar_title_hungry);
                         initMapViewFragment();
                         return true;
                     case R.id.bottom_nav_list_view:
+                        toolbar.setTitle(R.string.toolbar_title_hungry);
                         initRestaurantFragment();
                         return true;
                     case R.id.bottom_nav_workmates:

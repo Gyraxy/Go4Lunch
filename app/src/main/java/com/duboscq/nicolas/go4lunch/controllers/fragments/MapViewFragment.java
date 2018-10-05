@@ -50,7 +50,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback,Goog
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         LatLng Paris = new LatLng(48.864716, 2.349014);
         mMap.addMarker(new MarkerOptions().position(Paris).title("PARIS")).showInfoWindow();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Paris, 1));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Paris, 17));
     }
 
     @Override
