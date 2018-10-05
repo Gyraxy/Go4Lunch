@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_main_drawer) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
 
-
-
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
     private ImageView profile_imv;
