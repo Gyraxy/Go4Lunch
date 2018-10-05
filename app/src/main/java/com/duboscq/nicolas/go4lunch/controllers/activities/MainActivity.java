@@ -232,34 +232,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-    // --------------------
-    // REST REQUEST
-    // --------------------
-
-    // 1 - Http request that create user in firestore
-    private void createUserInFirestore(){
-
-        if (this.getCurrentUser() != null){
-
-            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-            String username = this.getCurrentUser().getDisplayName();
-            String uid = this.getCurrentUser().getUid();
-
-            UserHelper.createUser(uid, username, urlPicture).addOnFailureListener(this.onFailureListener());
-        }
-    }
-
-    // --------------------
-    // ERROR HANDLER
-    // --------------------
-
-    protected OnFailureListener onFailureListener(){
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
-            }
-        };
-    }
 }
