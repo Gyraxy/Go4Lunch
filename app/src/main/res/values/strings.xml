@@ -33,7 +33,9 @@
     <string name="drawer_no_username_found">No Username found</string>
 
     <!-- TOOLBAR -->
-    <string name="toolbar_title">I\'m Hungry !</string>
+    <string name="toolbar_title_hungry">I\'m Hungry !</string>
+    <string name="toolbar_title_workmates">Availables Workmates</string>
+    <string name="toolbar_search_query_hint">Search Restaurants</string>
 
     <!-- BOTTOM NAVIGATION -->
     <string name="bottom_nav_map_view">Map View</string>
