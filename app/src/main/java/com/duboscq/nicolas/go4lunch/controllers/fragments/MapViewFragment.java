@@ -1,10 +1,8 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,7 +25,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,7 +88,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
 
     @Override
     public boolean onMyLocationButtonClick() {
-        Toast.makeText(getContext(), "My Location button clicked", Toast.LENGTH_SHORT).show();
         return false;
     }
 
