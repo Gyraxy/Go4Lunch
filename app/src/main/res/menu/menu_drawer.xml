@@ -6,9 +6,17 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/activity_main_your_profile"
+            android:title="@string/drawer_profile"
+            android:icon="@drawable/profile_ic"/>
+        <item
             android:id="@+id/activity_main_your_lunch"
             android:title="@string/drawer_your_lunch"
             android:icon="@drawable/your_lunch_ico"/>
+        <item
+            android:id="@+id/activity_main_chat"
+            android:title="@string/drawer_message"
+            android:icon="@drawable/message_ic"/>
         <item
             android:id="@+id/activity_main_settings"
             android:title="@string/drawer_settings"

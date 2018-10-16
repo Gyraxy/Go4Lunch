@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,8 +14,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,24 +24,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
-import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
-import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,10 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
-    private ImageView profile_imv;
     TextView profile_name_txt,profile_email_txt;
-    FirebaseFirestore firestore;
-    List<DocumentSnapshot> myListOfDocuments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +101,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id) {
             case R.id.activity_main_your_lunch:
                 break;
+            case R.id.activity_main_chat:
+                Intent i_chat = new Intent(this, ChatActivity.class);
+                startActivity(i_chat);
+                break;
             case R.id.activity_main_settings:
+                Intent i_setting = new Intent(this, SettingActivity.class);
+                startActivity(i_setting);
                 break;
             case R.id.activity_main_logout:
                 signOutUserFromFirebase();
@@ -201,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View nav_header = navigationView.getHeaderView(0);
         profile_name_txt = nav_header.findViewById(R.id.nav_header_profile_name_txt);
         profile_email_txt = nav_header.findViewById(R.id.nav_header_profile_email_txt);
-        profile_imv = nav_header.findViewById(R.id.nav_header_profile_imv);
+        ImageView profile_imv = nav_header.findViewById(R.id.nav_header_profile_imv);
 
         if (this.getCurrentUser().getPhotoUrl() != null) {
             Glide.with(this)

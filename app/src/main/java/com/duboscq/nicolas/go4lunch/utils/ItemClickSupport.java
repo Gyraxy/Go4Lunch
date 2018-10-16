@@ -87,7 +87,7 @@ public class ItemClickSupport {
         view.setTag(mItemID, null);
     }
 
-    public interface OnItemClickListener {
+    interface OnItemClickListener {
 
         void onItemClicked(RecyclerView recyclerView, int position, View v);
     }

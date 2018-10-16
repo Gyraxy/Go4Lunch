@@ -21,7 +21,8 @@
             android:layout_width="@dimen/logo_width"
             android:layout_height="@dimen/logo_width"
             android:src="@drawable/home_icon"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/auth_imv_content_desc" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,7 +55,7 @@
             android:layout_width="@dimen/auth_login_button_width"
             android:layout_height="@dimen/auth_login_button_height"
             android:src="@drawable/facebook_login"
-            android:clickable="true"/>
+            android:contentDescription="@string/auth_imv_content_desc"/>
 
         <ImageView
             android:id="@+id/login_google_imv"
@@ -62,7 +63,7 @@
             android:layout_height="@dimen/auth_login_button_height"
             android:layout_marginTop="25dp"
             android:src="@drawable/google_login"
-            android:clickable="true"/>
+            android:contentDescription="@string/auth_imv_content_desc" />
 
     </LinearLayout>
 

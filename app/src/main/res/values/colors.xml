@@ -7,4 +7,7 @@
     <color name="WhiteColor">#FFFF</color>
     <color name="colorGrey">#BDBDBD</color>
     <color name="colorBlack">#000</color>
+    <color name="colorBlue">#0288D1</color>
+    <color name="colorRed">#FF5252</color>
+    <color name="colorError">#FF5252</color>
 </resources>

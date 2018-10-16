@@ -23,6 +23,7 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
 
     public void updateWorkmatesInfo(User user, RequestManager glide) {
         glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(workmates_profile_imv);
-        workmates_answer_txt.setText(user.getUsername()+(R.string.workmates_is_eating));
+        String answer = user.getUsername()+" is eating";
+        workmates_answer_txt.setText(answer);
     }
 }

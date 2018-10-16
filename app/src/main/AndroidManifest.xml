@@ -39,6 +39,19 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBF7E80Y0ixaXQnalfDDFn_wwdY99MesAA" />
 
+        <activity android:name=".controllers.activities.SettingActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".controllers.activities.ChatActivity"
+            android:label="@string/title_activity_chat"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
