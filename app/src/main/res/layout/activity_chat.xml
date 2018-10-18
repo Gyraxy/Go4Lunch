@@ -67,7 +67,8 @@
             android:adjustViewBounds="true"
             android:src="@drawable/add_image_ic"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:contentDescription="@string/auth_imv_content_desc"/>
+            android:contentDescription="@string/auth_imv_content_desc"
+            android:tint="@color/colorPrimary"/>
 
         <!-- TEXT MESSAGE EDIT TEXT -->
         <android.support.design.widget.TextInputEditText
@@ -77,6 +78,7 @@
             android:layout_weight="1"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
+            android:backgroundTint="@color/colorGrey"
             android:textSize="@dimen/default_text_size"
             android:hint="@string/chat_activity_text_view_input_title"/>
 
@@ -87,7 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/send_ic"
-            android:text="@string/button_title_mentor_chat_activity" />
+            android:text="@string/button_title_mentor_chat_activity"
+            android:tint="@color/colorPrimary"/>
 
     </LinearLayout>
 

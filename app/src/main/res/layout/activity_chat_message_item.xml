@@ -58,6 +58,7 @@
             android:layout_marginRight="@dimen/default_margin"
             android:layout_marginLeft="@dimen/default_margin"
             android:layout_below="@id/activity_chat_item_message_container_image_sent_cardview"
+            android:background="@drawable/ic_chat_message_background"
             android:orientation="horizontal"
             android:layout_margin="@dimen/default_margin">
 

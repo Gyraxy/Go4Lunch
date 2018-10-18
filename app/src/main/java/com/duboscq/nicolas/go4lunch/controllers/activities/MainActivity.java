@@ -28,6 +28,7 @@ import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -23,6 +23,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -41,6 +43,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
 
     // FOR DESIGN
     @BindView(R.id.fragment_workmates_recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.fragment_workmates_recycler_view_empty) TextView textViewRecyclerViewEmpty;
 
     // FOR DATA
     WorkmatesRecyclerViewAdapter workmatesRecyclerViewAdapter;
@@ -74,7 +77,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     //RECYCLERVIEW CONFIGURATION
     private void configureRecyclerView(){
 
-        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this);
+        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, this.getCurrentUser().getUid());
         workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -93,8 +96,19 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
                 .build();
     }
 
+    // --------------------
+    // CALLBACK
+    // --------------------
+
     @Override
     public void onDataChanged() {
-
+        textViewRecyclerViewEmpty.setVisibility(this.workmatesRecyclerViewAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
+
+    // --------------------
+    // UTILS
+    // --------------------
+
+    @Nullable
+    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 }

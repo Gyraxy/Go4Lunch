@@ -15,14 +15,16 @@ public class WorkmatesRecyclerViewAdapter extends FirestoreRecyclerAdapter<User,
 
     //FOR DATA
     private final RequestManager glide;
+    private final String idCurrentUser;
 
     //FOR COMMUNICATION
     private Listener callback;
 
-    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback) {
+    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback, String idCurrentUser) {
         super(options);
         this.glide = glide;
         this.callback = callback;
+        this.idCurrentUser = idCurrentUser;
     }
 
     @Override

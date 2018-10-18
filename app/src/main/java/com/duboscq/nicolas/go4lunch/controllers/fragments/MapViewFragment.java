@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
@@ -25,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,14 +36,17 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         ActivityCompat.OnRequestPermissionsResultCallback {
 
     //FOR DESIGN
-    @BindView(R.id.fragment_map_view_my_location_floating_btn) FloatingActionButton my_location_btn;
+    @BindView(R.id.fragment_map_view_my_location_floating_btn)
+    FloatingActionButton my_location_btn;
 
     //FOR DATA
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private boolean mPermissionDenied = false;
-    private View locationButton;
     SupportMapFragment mapFragment;
+    FusedLocationProviderClient mFusedLocationClient;
+    LatLng myLatLng;
+    Location mLastLocation;
+
 
     public MapViewFragment() {
     }
@@ -51,6 +54,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
     @Override
@@ -68,12 +72,19 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     }
 
     //ACTIONS
-    @OnClick (R.id.fragment_map_view_my_location_floating_btn)
-    public void getMyLocation() {
-        Location myLocation = mMap.getMyLocation();
-        LatLng myLatLng = new LatLng(myLocation.getLatitude(),
-                myLocation.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
+    @OnClick(R.id.fragment_map_view_my_location_floating_btn)
+    public void goOnMyLocation() {
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    mLastLocation = location;
+                    myLatLng = new LatLng(mLastLocation.getLatitude(),
+                            mLastLocation.getLongitude());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
+                }
+            }
+        });
     }
 
     @Override
@@ -84,6 +95,17 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setOnMyLocationClickListener(this);
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    mLastLocation = location;
+                    myLatLng = new LatLng(mLastLocation.getLatitude(),
+                            mLastLocation.getLongitude());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
+                }
+            }
+        });
     }
 
     @Override
@@ -93,7 +115,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
     }
 
     //PERMISSIONS
@@ -108,4 +129,5 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             mMap.setMyLocationEnabled(true);
         }
     }
+
 }

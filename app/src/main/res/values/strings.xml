@@ -56,6 +56,7 @@
     <!-- WORKMATES LIST VIEW-->
     <string name="workmates_is_eating">is eating</string>
     <string name="workmates_not_decided">has not decided yet</string>
+    <string name="workmates_fragment_no_workmates">No Workmates registered</string>
 
     <!-- SETTING ACTIVITY-->
     <string name="profile">Profile</string>
@@ -70,6 +71,8 @@
     <string name="chat_activity_text_view_chat_error">There are no messages&#8230;</string>
     <string name="chat_activity_text_view_input_title">Write your message</string>
     <string name="button_title_mentor_chat_activity">SENT</string>
+    <string name="popup_title_permission_files_access">This application needs your permission to work correctly.</string>
+    <string name="toast_title_no_image_chosen">No pictures choosen&#8230;</string>
 
 
 </resources>
