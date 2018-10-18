@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controllers.activities.SettingActivity"
+    tools:context=".controllers.activities.SettingProfileActivity"
     android:orientation="vertical">
 
     <include
@@ -64,6 +64,7 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/activity_setting_view"
         android:layout_gravity="center"
         android:layout_width="300dp"
         android:layout_height="1dp"
@@ -84,5 +85,62 @@
             android:textSize="14sp"/>
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_profile_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="16dp"
+        android:gravity="center">
+
+
+        <ImageView
+            android:id="@+id/activity_profile_image_imv"
+            android:layout_width="150dp"
+            android:layout_height="150dp"/>
+
+        <EditText
+            android:id="@+id/activity_profile_username_edt"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_profile_image_imv"
+            android:paddingTop="70dp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/activity_profile_delete_btn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_profile_username_edt"
+            android:layout_alignStart="@+id/activity_profile_image_imv"
+            android:padding="16dp"
+            android:text="@string/profile_delete_account"
+            android:textSize="16sp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/activity_profile_edit_floating_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/activity_profile_delete_btn"
+            android:layout_alignParentStart="@+id/activity_profile_username_edt"
+            android:layout_toEndOf="@+id/activity_profile_username_edt"
+            app:backgroundTint="@color/colorLight"
+            android:src="@drawable/edit_ico" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/activity_profile_delete_floating_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/activity_profile_username_edt"
+            android:layout_toEndOf="@+id/activity_profile_delete_btn"
+            android:layout_centerInParent="@+id/activity_profile_delete_btn"
+            app:backgroundTint="@color/colorError"
+            android:src="@drawable/delete_ico"/>
+
+
+    </RelativeLayout>
+
 
 </LinearLayout>

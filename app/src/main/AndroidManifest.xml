@@ -42,7 +42,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBF7E80Y0ixaXQnalfDDFn_wwdY99MesAA" />
 
-        <activity android:name=".controllers.activities.SettingActivity">
+        <activity android:name=".controllers.activities.SettingProfileActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity" />

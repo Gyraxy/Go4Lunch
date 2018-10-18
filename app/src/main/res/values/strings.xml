@@ -37,7 +37,8 @@
     <string name="toolbar_title_workmates">Availables Workmates</string>
     <string name="toolbar_search_query_hint">Search Restaurants</string>
     <string name="toolbar_title_settings">Settings</string>
-    <string name="toolbar_title_chat">Chat</string>
+    <string name="toolbar_title_message">Chat</string>
+    <string name="toolbar_title_profile">Profile</string>
 
     <!-- BOTTOM NAVIGATION -->
     <string name="bottom_nav_map_view">Map View</string>
@@ -64,6 +65,7 @@
     <string name="settings_language">Language :</string>
     <string name="settings_language_french">French</string>
     <string name="settings_language_english">English</string>
+    <string name="profile_delete_account">Delete Account</string>
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">There are no messages&#8230;</string>

@@ -26,7 +26,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="drawer_profile">PROFIL</string>
-    <string name="drawer_your_lunch">VOTRE REPAS</string>
+    <string name="drawer_your_lunch">REPAS</string>
     <string name="drawer_message">MESSAGE</string>
     <string name="drawer_settings">REGLAGES</string>
     <string name="drawer_logout">DECONNEXION</string>
@@ -38,7 +38,8 @@
     <string name="toolbar_title_workmates">Collègues disponibles</string>
     <string name="toolbar_search_query_hint">Recherche Restaurant</string>
     <string name="toolbar_title_settings">Paramètres</string>
-    <string name="toolbar_title_chat">Messagerie</string>
+    <string name="toolbar_title_message">Messagerie</string>
+    <string name="toolbar_title_profile">Profil</string>
 
     <!-- BOTTOM NAVIGATION -->
     <string name="bottom_nav_map_view">Carte</string>
@@ -65,6 +66,7 @@
     <string name="settings_language">Langue :</string>
     <string name="settings_language_french">Français</string>
     <string name="settings_language_english">Anglais</string>
+    <string name="profile_delete_account">Effacer le compte</string>
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">Il n\'y a aucuns messages&#8230;</string>

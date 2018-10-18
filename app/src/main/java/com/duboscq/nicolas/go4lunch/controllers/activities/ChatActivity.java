@@ -90,7 +90,7 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
     // TOOLBAR
 
     private void configureToolBar(){
-        toolbar.setTitle(R.string.toolbar_title_chat);
+        toolbar.setTitle(R.string.toolbar_title_message);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);

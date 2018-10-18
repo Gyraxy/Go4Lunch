@@ -28,7 +28,6 @@ import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -100,6 +99,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id) {
+            case R.id.activity_main_your_profile:
+                Intent i_profile = new Intent(this, SettingProfileActivity.class);
+                i_profile.putExtra("Activity","Profile");
+                startActivity(i_profile);
+                break;
             case R.id.activity_main_your_lunch:
                 break;
             case R.id.activity_main_chat:
@@ -107,7 +111,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(i_chat);
                 break;
             case R.id.activity_main_settings:
-                Intent i_setting = new Intent(this, SettingActivity.class);
+                Intent i_setting = new Intent(this, SettingProfileActivity.class);
+                i_setting.putExtra("Activity","Settings");
                 startActivity(i_setting);
                 break;
             case R.id.activity_main_logout:
