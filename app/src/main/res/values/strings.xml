@@ -59,13 +59,18 @@
     <string name="workmates_not_decided">has not decided yet</string>
     <string name="workmates_fragment_no_workmates">No Workmates registered</string>
 
-    <!-- SETTING ACTIVITY-->
+    <!-- SETTING/PROFILE ACTIVITY-->
     <string name="profile">Profile</string>
     <string name="switch_notification">Enable notification</string>
     <string name="settings_language">Language :</string>
     <string name="settings_language_french">French</string>
     <string name="settings_language_english">English</string>
     <string name="profile_delete_account">Delete Account</string>
+    <string name="popup_message_confirmation_delete_account">Are you sure you want to delete your account?</string>
+    <string name="popup_message_answer_yes">Yes !</string>
+    <string name="popup_message_answer_no">No</string>
+    <string name="info_no_username_found">No Username</string>
+
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">There are no messages&#8230;</string>

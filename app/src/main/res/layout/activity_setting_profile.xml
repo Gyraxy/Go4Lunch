@@ -101,16 +101,26 @@
             android:layout_width="150dp"
             android:layout_height="150dp"/>
 
+        <!-- PROGRESS BAR -->
+        <ProgressBar
+            android:id="@+id/activity_profile_progress_bar"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
+            android:visibility="invisible"
+            android:layout_above="@id/activity_profile_edit_floating_btn"
+            android:layout_toEndOf="@+id/activity_profile_username_edt"/>
+
         <EditText
             android:id="@+id/activity_profile_username_edt"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/activity_profile_image_imv"
             android:paddingTop="70dp"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            style="@style/EditText"/>
 
         <TextView
-            android:id="@+id/activity_profile_delete_btn"
+            android:id="@+id/activity_profile_delete_txt"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/activity_profile_username_edt"
@@ -123,7 +133,7 @@
             android:id="@+id/activity_profile_edit_floating_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/activity_profile_delete_btn"
+            android:layout_above="@+id/activity_profile_delete_txt"
             android:layout_alignParentStart="@+id/activity_profile_username_edt"
             android:layout_toEndOf="@+id/activity_profile_username_edt"
             app:backgroundTint="@color/colorLight"
@@ -134,8 +144,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/activity_profile_username_edt"
-            android:layout_toEndOf="@+id/activity_profile_delete_btn"
-            android:layout_centerInParent="@+id/activity_profile_delete_btn"
+            android:layout_toEndOf="@+id/activity_profile_delete_txt"
+            android:layout_centerInParent="@+id/activity_profile_delete_txt"
             app:backgroundTint="@color/colorError"
             android:src="@drawable/delete_ico"/>
 

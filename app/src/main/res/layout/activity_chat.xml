@@ -78,7 +78,7 @@
             android:layout_weight="1"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
-            android:backgroundTint="@color/colorGrey"
+            style="@style/EditText"
             android:textSize="@dimen/default_text_size"
             android:hint="@string/chat_activity_text_view_input_title"/>
 

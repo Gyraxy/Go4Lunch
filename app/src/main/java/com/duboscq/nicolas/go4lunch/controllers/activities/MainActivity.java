@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,13 +25,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
+import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -208,9 +212,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (this.getCurrentUser() != null) {
-            String username = getCurrentUser().getDisplayName();
+            UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    User currentUser = documentSnapshot.toObject(User.class);
+                    String username = TextUtils.isEmpty(currentUser.getUsername()) ? getString(R.string.info_no_username_found) : currentUser.getUsername();
+                    profile_name_txt.setText(username);
+                }
+            });
             String usermail = getCurrentUser().getEmail();
-            profile_name_txt.setText(username);
             profile_email_txt.setText(usermail);
         }
     }

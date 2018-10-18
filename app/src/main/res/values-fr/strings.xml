@@ -60,13 +60,17 @@
     <string name="workmates_not_decided">ne s\'est pas décidé encore</string>
     <string name="workmates_fragment_no_workmates">Aucuns collègues enregistrés</string>
 
-    <!-- SETTING ACTIVITY-->
+    <!-- SETTING/PROFILE ACTIVITY-->
     <string name="profile">Profile</string>
     <string name="switch_notification">Activer les notifications</string>
     <string name="settings_language">Langue :</string>
     <string name="settings_language_french">Français</string>
     <string name="settings_language_english">Anglais</string>
     <string name="profile_delete_account">Effacer le compte</string>
+    <string name="popup_message_confirmation_delete_account">Voulez vous vraiment effacer votre compte ?</string>
+    <string name="popup_message_answer_yes">Oui !</string>
+    <string name="popup_message_answer_no">Non</string>
+    <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">Il n\'y a aucuns messages&#8230;</string>

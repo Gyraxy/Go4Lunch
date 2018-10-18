@@ -1,7 +1,10 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,16 +13,23 @@ import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -37,7 +47,8 @@ public class SettingProfileActivity extends AppCompatActivity {
     @BindView(R.id.activity_setting_language_en_rbtn) RadioButton english_rbtn;
     @BindView(R.id.activity_setting_switch) Switch notification_switch;
     @BindView(R.id.activity_profile_image_imv) ImageView profile_imv;
-
+    @BindView(R.id.activity_profile_username_edt) EditText username_update_edt;
+    @BindView(R.id.activity_profile_progress_bar) ProgressBar progressBar;
 
     @BindView(R.id.activity_profile_image_layout) RelativeLayout profile_layout;
     @BindView(R.id.activity_setting_switch_layout) LinearLayout setting_switch_layout;
@@ -49,6 +60,9 @@ public class SettingProfileActivity extends AppCompatActivity {
     String language;
     String TAG_LANGUAGE = "TAG_LANGUAGE";
     String activity;
+
+    private static final int DELETE_USER_TASK = 20;
+    private static final int UPDATE_USERNAME = 30;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +79,9 @@ public class SettingProfileActivity extends AppCompatActivity {
         getLanguage();
     }
 
+    //--------
     // ACTIONS
+    //--------
 
     @OnClick({R.id.activity_setting_language_fr_rbtn, R.id.activity_setting_language_en_rbtn})
     public void onRadioButtonClicked(RadioButton radioButton) {
@@ -100,7 +116,30 @@ public class SettingProfileActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick (R.id.activity_profile_delete_floating_btn)
+    public void deleteAccount(){
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.popup_message_confirmation_delete_account)
+                .setPositiveButton(R.string.popup_message_answer_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteUserFromFirebase();
+                    }
+                })
+                .setNegativeButton(R.string.popup_message_answer_no, null)
+                .show();
+    }
+
+    @OnClick (R.id.activity_profile_edit_floating_btn)
+    public void updateUsername(){
+        this.updateUsernameInFirebase();
+    }
+
+    //--------------
     // CONFIGURATION
+    //--------------
+
+    //TOOLBAR
 
     private void configureToolBar(){
         if (activity.equals("Settings")){
@@ -112,6 +151,8 @@ public class SettingProfileActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
     }
+
+    //CHECK DEVICE LANGUAGE OR SAVED LANGUAGE AND CHECK RADIOBUTTON
 
     private void getLanguage(){
         language = SharedPreferencesUtility.getString(this,TAG_LANGUAGE);
@@ -132,6 +173,8 @@ public class SettingProfileActivity extends AppCompatActivity {
         }
     }
 
+    //LAYOUT CONFIGURATION DEPEND IF PROFILE OR SETTING
+
     private void setSettingLayout(){
         profile_layout.setVisibility(View.GONE);
     }
@@ -149,6 +192,63 @@ public class SettingProfileActivity extends AppCompatActivity {
         }
     }
 
+    //------
+    // UTILS
+    //------
+
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+
+    private void deleteUserFromFirebase(){
+        if (this.getCurrentUser() != null) {
+            AuthUI.getInstance()
+                    .delete(this)
+                    .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
+            UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
+        }
+    }
+
+    private void updateUsernameInFirebase(){
+
+        this.progressBar.setVisibility(View.VISIBLE);
+        String username = this.username_update_edt.getText().toString();
+
+        if (this.getCurrentUser() != null){
+            if (!username.isEmpty() &&  !username.equals(getString(R.string.info_no_username_found))){
+                UserHelper.updateUsername(username, this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
+            }
+        }
+    }
+
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                switch (origin){
+                    case DELETE_USER_TASK:
+                        Intent close = new Intent(getApplicationContext(),AuthActivity.class);
+                        startActivity(close);
+                        break;
+                    case UPDATE_USERNAME:
+                        progressBar.setVisibility(View.GONE);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+    }
+
+    // --------------------
+    // ERROR HANDLER
+    // --------------------
+
+    protected OnFailureListener onFailureListener(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+            }
+        };
+    }
 }
