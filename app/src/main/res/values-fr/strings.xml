@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- APPLICATION -->
+    <string name="app_name">Go4Lunch</string>
+
+    <!-- MAIN ACTIVITY -->
+    <string name="search">Search</string>
+
+    <!-- LOGIN ACTIVITY -->
+    <string name="auth_subtitle">Find a nice restaurant and invite your co-workers for lunch !</string>
+    <string name="error_not_connected">Vous devez être connecté</string>
+    <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
+    <string name="error_no_internet">Pas de connexion internet !</string>
+    <string name="error_unknown_error">Une erreur est survenue&#8230;</string>
+    <string name="connection_succeed">Authentification réussi !</string>
+    <string name="auth_loggout">Vous avez été déconnecté </string>
+    <string name="auth_imv_content_desc">Null</string>
+
+
+    <!-- FACEBOOK PURPOSE -->
+    <string name="facebook_application_id" translatable="false">280804142565240</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb280804142565240</string>
+
+    <!-- NAVIGATION DRAWER -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="drawer_profile">PROFIL</string>
+    <string name="drawer_your_lunch">VOTRE REPAS</string>
+    <string name="drawer_message">MESSAGE</string>
+    <string name="drawer_settings">REGLAGES</string>
+    <string name="drawer_logout">DECONNEXION</string>
+    <string name="drawer_no_email_found">Aucun email trouvé</string>
+    <string name="drawer_no_username_found">Aucun utilisateur trouvé</string>
+
+    <!-- TOOLBAR -->
+    <string name="toolbar_title_hungry">J\'ai Faim !</string>
+    <string name="toolbar_title_workmates">Collègues disponibles</string>
+    <string name="toolbar_search_query_hint">Recherche Restaurant</string>
+    <string name="toolbar_title_settings">Paramètres</string>
+    <string name="toolbar_title_chat">Messagerie</string>
+
+    <!-- BOTTOM NAVIGATION -->
+    <string name="bottom_nav_map_view">Carte</string>
+    <string name="bottom_nav_list_view">Liste</string>
+    <string name="bottom_nav_workmates">Collègues</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+
+    <!-- WORKMATES LIST VIEW-->
+    <string name="workmates_is_eating">mange</string>
+    <string name="workmates_not_decided">ne s\'est pas décidé encore</string>
+    <string name="workmates_fragment_no_workmates">Aucuns collègues enregistrés</string>
+
+    <!-- SETTING ACTIVITY-->
+    <string name="profile">Profile</string>
+    <string name="switch_notification">Activer les notifications</string>
+    <string name="settings_language">Langue :</string>
+    <string name="settings_language_french">Français</string>
+    <string name="settings_language_english">Anglais</string>
+
+    <!-- CHAT ACTIVITY-->
+    <string name="chat_activity_text_view_chat_error">Il n\'y a aucuns messages&#8230;</string>
+    <string name="chat_activity_text_view_input_title">Ecrivez votre message</string>
+    <string name="popup_title_permission_files_access">Autorisation requise pour fonctionner.</string>
+    <string name="toast_title_no_image_chosen">Aucunes images choisies&#8230;</string>
+
+</resources>

@@ -40,18 +40,24 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-
-            <RadioButton
-                android:id="@+id/activity_setting_language_fr_rbtn"
-                android:layout_height="wrap_content"
+            <RadioGroup
+                android:id="@+id/activity_setting_radio_language"
                 android:layout_width="wrap_content"
-                android:text="@string/settings_language_french"/>
+                android:layout_height="wrap_content" >
 
-            <RadioButton
-                android:id="@+id/activity_setting_language_en_rbtn"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/settings_language_english"/>
+                <RadioButton
+                    android:id="@+id/activity_setting_language_fr_rbtn"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/settings_language_french"/>
+
+                <RadioButton
+                    android:id="@+id/activity_setting_language_en_rbtn"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/settings_language_english"/>
+
+            </RadioGroup>
 
         </LinearLayout>
 
@@ -64,13 +70,13 @@
         android:background="@color/colorGrey"/>
 
     <LinearLayout
-        android:id="@+id/activity_notification_switch_layout"
+        android:id="@+id/activity_setting_switch_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
         <Switch
-            android:id="@+id/activity_notification_switch"
+            android:id="@+id/activity_setting_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/switch_notification"

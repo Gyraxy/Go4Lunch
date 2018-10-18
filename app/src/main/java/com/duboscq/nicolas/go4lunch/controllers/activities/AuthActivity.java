@@ -1,6 +1,7 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
+import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -21,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +39,8 @@ public class AuthActivity extends AppCompatActivity {
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
     private static final int SIGN_OUT_TASK = 10;
+    String language;
+    String TAG_LANGUAGE = "TAG_LANGUAGE";
 
 
     @Override
@@ -43,6 +48,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
+        configureLanguage();
     }
 
     @Override
@@ -113,6 +119,34 @@ public class AuthActivity extends AppCompatActivity {
                 login_facebook_btn.setImageResource(R.drawable.facebook_login);
                 login_google_btn.setImageResource(R.drawable.google_login);
                 break;
+        }
+    }
+
+    // --------------------
+    // LANGUAGE PREFERENCES
+    // --------------------
+
+    private void configureLanguage(){
+        language = SharedPreferencesUtility.getString(this,TAG_LANGUAGE);
+        if (language != null){
+            switch (language){
+                case "Français":
+                    Locale locale_fr = new Locale("fr");
+                    Locale.setDefault(locale_fr);
+                    Configuration config_fr = new Configuration();
+                    config_fr.locale = locale_fr;
+                    getBaseContext().getResources().updateConfiguration(config_fr,getBaseContext().getResources().getDisplayMetrics());
+                    break;
+                case "English":
+                    Locale locale_en = new Locale("en");
+                    Locale.setDefault(locale_en);
+                    Configuration config_en = new Configuration();
+                    config_en.locale = locale_en;
+                    getBaseContext().getResources().updateConfiguration(config_en,getBaseContext().getResources().getDisplayMetrics());
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

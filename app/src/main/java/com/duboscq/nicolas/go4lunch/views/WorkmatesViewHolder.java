@@ -21,9 +21,9 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
         workmates_answer_txt = itemView.findViewById(R.id.workmates_answer_txt);
     }
 
-    public void updateWorkmatesInfo(User user, RequestManager glide) {
+    public void updateWorkmatesInfo(User user, RequestManager glide,String answer) {
         glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(workmates_profile_imv);
-        String answer = user.getUsername()+" is eating";
-        workmates_answer_txt.setText(answer);
+        String restaurant_answer = user.getUsername()+" "+answer;
+        workmates_answer_txt.setText(restaurant_answer);
     }
 }

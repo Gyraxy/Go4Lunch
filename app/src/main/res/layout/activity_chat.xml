@@ -89,7 +89,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/send_ic"
-            android:text="@string/button_title_mentor_chat_activity"
             android:tint="@color/colorPrimary"/>
 
     </LinearLayout>
