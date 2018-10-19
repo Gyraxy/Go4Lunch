@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        enableMyLocation();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
@@ -91,7 +93,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        enableMyLocation();
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setOnMyLocationClickListener(this);
@@ -129,5 +130,4 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             mMap.setMyLocationEnabled(true);
         }
     }
-
 }

@@ -70,6 +70,7 @@
     <string name="popup_message_answer_yes">Yes !</string>
     <string name="popup_message_answer_no">No</string>
     <string name="info_no_username_found">No Username</string>
+    <string name="username_updated">Your username has been updated.</string>
 
 
     <!-- CHAT ACTIVITY-->

@@ -72,11 +72,12 @@ public class SettingProfileActivity extends AppCompatActivity {
         activity = getIntent().getExtras().getString("Activity");
         if (activity.equals("Settings")){
             setSettingLayout();
+            getLanguage();
+            configureToolBar();
         } else if (activity.equals("Profile")){
             setProfile_layout();
+            configureToolBar();
         }
-        configureToolBar();
-        getLanguage();
     }
 
     //--------
@@ -94,8 +95,9 @@ public class SettingProfileActivity extends AppCompatActivity {
                     Configuration config = new Configuration();
                     config.locale = locale;
                     getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
-                    SharedPreferencesUtility.putString(this,TAG_LANGUAGE,"Français");
+                    SharedPreferencesUtility.putString(this,TAG_LANGUAGE,"français");
                     Intent refresh = new Intent(SettingProfileActivity.this, SettingProfileActivity.class);
+                    refresh.putExtra("Activity","Settings");
                     startActivity(refresh);
                     finish();
                 }
@@ -109,6 +111,7 @@ public class SettingProfileActivity extends AppCompatActivity {
                     getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
                     SharedPreferencesUtility.putString(this,TAG_LANGUAGE,"English");
                     Intent refresh = new Intent(SettingProfileActivity.this, SettingProfileActivity.class);
+                    refresh.putExtra("Activity","Settings");
                     startActivity(refresh);
                     finish();
                 }
@@ -133,6 +136,7 @@ public class SettingProfileActivity extends AppCompatActivity {
     @OnClick (R.id.activity_profile_edit_floating_btn)
     public void updateUsername(){
         this.updateUsernameInFirebase();
+        Toast.makeText(this,getString(R.string.username_updated),Toast.LENGTH_SHORT).show();
     }
 
     //--------------
@@ -159,7 +163,8 @@ public class SettingProfileActivity extends AppCompatActivity {
         if (language == null){
             radio_language = Locale.getDefault().getDisplayLanguage();
         } else radio_language = language;
-        Log.e("TAG",radio_language);
+
+        Log.i("APP","APP Language "+radio_language);
 
         switch (radio_language){
             case "français":

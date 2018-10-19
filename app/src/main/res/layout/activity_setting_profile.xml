@@ -99,7 +99,8 @@
         <ImageView
             android:id="@+id/activity_profile_image_imv"
             android:layout_width="150dp"
-            android:layout_height="150dp"/>
+            android:layout_height="150dp"
+            android:layout_marginLeft="20dp"/>
 
         <!-- PROGRESS BAR -->
         <ProgressBar
@@ -124,7 +125,6 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/activity_profile_username_edt"
-            android:layout_alignStart="@+id/activity_profile_image_imv"
             android:padding="16dp"
             android:text="@string/profile_delete_account"
             android:textSize="16sp" />
