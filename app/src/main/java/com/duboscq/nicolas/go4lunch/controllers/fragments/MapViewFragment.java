@@ -1,6 +1,7 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.controllers.activities.ChatActivity;
 import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,6 +41,8 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     //FOR DESIGN
     @BindView(R.id.fragment_map_view_my_location_floating_btn)
     FloatingActionButton my_location_btn;
+    @BindView(R.id.fragment_map_view_message_floating_btn)
+    FloatingActionButton message_btn;
 
     //FOR DATA
     private GoogleMap mMap;
@@ -76,17 +80,13 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     //ACTIONS
     @OnClick(R.id.fragment_map_view_my_location_floating_btn)
     public void goOnMyLocation() {
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    mLastLocation = location;
-                    myLatLng = new LatLng(mLastLocation.getLatitude(),
-                            mLastLocation.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
-                }
-            }
-        });
+        centerMyLocation();
+    }
+
+    @OnClick(R.id.fragment_map_view_message_floating_btn)
+    public void goChat() {
+        Intent chat = new Intent(getActivity(),ChatActivity.class);
+        startActivity(chat);
     }
 
     @Override
@@ -95,18 +95,25 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        enableMyLocation();
         mMap.setOnMyLocationClickListener(this);
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    mLastLocation = location;
-                    myLatLng = new LatLng(mLastLocation.getLatitude(),
-                            mLastLocation.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mLastLocation = location;
+                        myLatLng = new LatLng(mLastLocation.getLatitude(),
+                                mLastLocation.getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 15));
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            PermissionUtils.requestPermission((AppCompatActivity) getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
     }
 
     @Override
@@ -129,5 +136,49 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
         }
+    }
+
+    public void centerMyLocation(){
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mLastLocation = location;
+                        myLatLng = new LatLng(mLastLocation.getLatitude(),
+                                mLastLocation.getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 15));
+                    }
+                }
+            });
+        } else {
+            PermissionUtils.requestPermission((AppCompatActivity) getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("APP","MapFrag : OnResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("APP","MapFrag : OnPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("APP","MapFrag : OnStop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("APP","MapFrag : OnDestroy");
     }
 }

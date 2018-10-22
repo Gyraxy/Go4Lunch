@@ -54,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
     TextView profile_name_txt,profile_email_txt;
+    MapViewFragment mapViewFragment;
+    RestaurantFragment restaurantFragment;
+    WorkmatesFragment workmatesFragment;
+    FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
+        initFragment();
         configureBottomOnClick();
-        initMapViewFragment();
         updateProfileData();
     }
 
@@ -110,10 +114,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.activity_main_your_lunch:
                 break;
-            case R.id.activity_main_chat:
-                Intent i_chat = new Intent(this, ChatActivity.class);
-                startActivity(i_chat);
-                break;
             case R.id.activity_main_settings:
                 Intent i_setting = new Intent(this, SettingProfileActivity.class);
                 i_setting.putExtra("Activity","Settings");
@@ -149,15 +149,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 switch (id) {
                     case R.id.bottom_nav_map:
                         toolbar.setTitle(R.string.toolbar_title_hungry);
-                        initMapViewFragment();
+                        fragmentManager.beginTransaction().show(mapViewFragment).hide(restaurantFragment).hide(workmatesFragment).commit();
+                        mapViewFragment.centerMyLocation();
                         return true;
                     case R.id.bottom_nav_list_view:
                         toolbar.setTitle(R.string.toolbar_title_hungry);
-                        initRestaurantFragment();
+                        fragmentManager.beginTransaction().show(restaurantFragment).hide(mapViewFragment).hide(workmatesFragment).commit();
                         return true;
                     case R.id.bottom_nav_workmates:
                         toolbar.setTitle(R.string.toolbar_title_workmates);
-                        initWorkmatesFragment();
+                        fragmentManager.beginTransaction().show(workmatesFragment).hide(restaurantFragment).hide(mapViewFragment).commit();
                         return true;
                 }
                 return false;
@@ -169,27 +170,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //FRAGMENT
     //--------
 
-    private void initMapViewFragment() {
-        MapViewFragment mapViewFragment = new MapViewFragment();
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
+    private void initFragment() {
+        mapViewFragment = new MapViewFragment();
+        restaurantFragment = new RestaurantFragment();
+        workmatesFragment = new WorkmatesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_activity_frame_layout, mapViewFragment);
-        fragmentTransaction.commit();
-    }
-
-    private void initRestaurantFragment() {
-        RestaurantFragment restaurantFragment = new RestaurantFragment();
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_activity_frame_layout,restaurantFragment);
-        fragmentTransaction.commit();
-    }
-
-    private void initWorkmatesFragment() {
-        WorkmatesFragment workmatesFragment = new WorkmatesFragment();
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_activity_frame_layout,workmatesFragment);
+        fragmentTransaction.add(R.id.main_activity_frame_layout,workmatesFragment).hide(workmatesFragment);
+        fragmentTransaction.add(R.id.main_activity_frame_layout,restaurantFragment).hide(restaurantFragment);
+        fragmentTransaction.add(R.id.main_activity_frame_layout, mapViewFragment);
         fragmentTransaction.commit();
     }
 

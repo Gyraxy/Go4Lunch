@@ -22,4 +22,15 @@
         android:src="@drawable/ic_my_location"
         app:backgroundTint="@color/WhiteColor"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fragment_map_view_message_floating_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="15dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/message_ic"
+        app:backgroundTint="@color/WhiteColor"/>
+
 </RelativeLayout>

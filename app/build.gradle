@@ -15,6 +15,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue("string", "api_google_place_key", "AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4")
+        }
+        debug {
+            resValue("string", "api_google_place_key", "AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4")
         }
     }
 }
@@ -58,7 +62,15 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-places:15.0.1'
 
-    //SEARCHTOOLBAR
-    implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
+    //GSON
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    //RETROFIT
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+
+    //RX JAVA
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.10'
 }
 apply plugin: 'com.google.gms.google-services'
