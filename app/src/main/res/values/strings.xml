@@ -59,6 +59,11 @@
     <string name="workmates_not_decided">has not decided yet</string>
     <string name="workmates_fragment_no_workmates">No Workmates registered</string>
 
+    <!-- RESTAURANT LIST VIEW-->
+    <string name="restaurant_open">Open Now</string>
+    <string name="restaurant_close">Closed Now</string>
+    <string name="restaurant_no_opening_info">No Opening information</string>
+
     <!-- SETTING/PROFILE ACTIVITY-->
     <string name="profile">Profile</string>
     <string name="switch_notification">Enable notification</string>
@@ -79,5 +84,11 @@
     <string name="popup_title_permission_files_access">This application needs your permission to work correctly.</string>
     <string name="toast_title_no_image_chosen">No pictures choosen&#8230;</string>
 
+    <!-- RESTAURANT ACTIVITY-->
+    <string name="toolbar_title_restaurant_activity">Restaurant Detail</string>
+    <string name="restaurant_nav_call">CALL</string>
+    <string name="restaurant_nav_like">LIKE</string>
+    <string name="restaurant_nav_website">WEBSITE</string>
+    <string name="restaurant_like_action">"You add one like to this restaurant"</string>
 
 </resources>

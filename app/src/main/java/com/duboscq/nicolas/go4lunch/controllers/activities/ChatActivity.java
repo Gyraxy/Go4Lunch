@@ -79,7 +79,6 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // 6 - Calling the appropriate method after activity result
         this.handleResponse(requestCode, resultCode, data);
     }
 

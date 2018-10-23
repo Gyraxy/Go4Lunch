@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,11 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.RestaurantListRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
+import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +40,7 @@ public class RestaurantFragment extends Fragment {
     RestaurantListRecyclerViewAdapter adapter;
     private Disposable disposable;
     String NETWORK = "NETWORK";
+
     public RestaurantFragment() { }
 
     @Override
@@ -49,6 +54,7 @@ public class RestaurantFragment extends Fragment {
         ButterKnife.bind(this, view);
         configureRecyclerView();
         configureAndShowRestaurantList();
+        configureOnClickRecyclerView();
         return view;
     }
 
@@ -60,13 +66,33 @@ public class RestaurantFragment extends Fragment {
 
     private void configureRecyclerView() {
         this.restaurant_list = new ArrayList<>();
-        this.adapter = new RestaurantListRecyclerViewAdapter(this.restaurant_list,distance);
+        this.adapter = new RestaurantListRecyclerViewAdapter(this.restaurant_list,distance,Glide.with(this));
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
+    private void configureOnClickRecyclerView() {
+        ItemClickSupport.addTo(restaurant_recyclerView, R.layout.fragment_restaurant)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener(){
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Intent i = new Intent(getActivity(), RestaurantActivity.class);
+                        i.putExtra("restaurant_id",restaurant_list.get(position).getPlaceId());
+                        if (restaurant_list.get(position).getPhotos() != null) {
+                            if (restaurant_list.get(position).getPhotos().get(0).getPhotoReference() != null){
+                                String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
+                                        restaurant_list.get(position).getPhotos().get(0).getPhotoReference()+
+                                        "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
+                                i.putExtra("restaurant_image_url",restaurantPictureUrl);
+                            }
+                        }
+                        startActivity(i);
+                    }
+                });
+    }
+
     public void configureAndShowRestaurantList() {
-        disposable = APIStreams.getRestaurantList(20,getString(R.string.api_google_place_key)).subscribeWith(new DisposableObserver<RestaurantPlace>() {
+        disposable = APIStreams.getRestaurantList(100,getString(R.string.api_google_place_key)).subscribeWith(new DisposableObserver<RestaurantPlace>() {
             @Override
             public void onNext(RestaurantPlace restaurantPlace) {
                 Log.i(NETWORK, "RestauFragment : On Next");

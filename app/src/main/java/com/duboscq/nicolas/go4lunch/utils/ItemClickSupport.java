@@ -87,7 +87,7 @@ public class ItemClickSupport {
         view.setTag(mItemID, null);
     }
 
-    interface OnItemClickListener {
+    public interface OnItemClickListener {
 
         void onItemClicked(RecyclerView recyclerView, int position, View v);
     }
@@ -97,3 +97,4 @@ public class ItemClickSupport {
         boolean onItemLongClicked(RecyclerView recyclerView, int position, View v);
     }
 }
+

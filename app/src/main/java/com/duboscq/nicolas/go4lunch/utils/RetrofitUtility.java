@@ -11,7 +11,7 @@ public class RetrofitUtility {
     public static Retrofit getInstance(){
         if(INSTANCE == null){
             INSTANCE = new Retrofit.Builder()
-                    .baseUrl("https://maps.googleapis.com/maps/api/place/nearbysearch/")
+                    .baseUrl("https://maps.googleapis.com/maps/api/place/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();

@@ -60,6 +60,11 @@
     <string name="workmates_not_decided">ne s\'est pas décidé encore</string>
     <string name="workmates_fragment_no_workmates">Aucuns collègues enregistrés</string>
 
+    <!-- RESTAURANT LIST VIEW-->
+    <string name="restaurant_open">Ouvert Actuellement</string>
+    <string name="restaurant_close">Fermé Actuellement</string>
+    <string name="restaurant_no_opening_info">Pas d\'information sur horaire d\'ouverture</string>
+
     <!-- SETTING/PROFILE ACTIVITY-->
     <string name="profile">Profile</string>
     <string name="switch_notification">Activer les notifications</string>
@@ -78,5 +83,12 @@
     <string name="chat_activity_text_view_input_title">Ecrivez votre message</string>
     <string name="popup_title_permission_files_access">Autorisation requise pour fonctionner.</string>
     <string name="toast_title_no_image_chosen">Aucunes images choisies&#8230;</string>
+
+    <!-- RESTAURANT ACTIVITY-->
+    <string name="toolbar_title_restaurant_activity">Détail Restaurant</string>
+    <string name="restaurant_nav_call">APPELER</string>
+    <string name="restaurant_nav_like">AIMER</string>
+    <string name="restaurant_nav_website">SITE</string>
+    <string name="restaurant_like_action">"Vous ajoutez un "Like" à ca restaurant."</string>
 
 </resources>

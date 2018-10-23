@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.api;
 
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.utils.RetrofitUtility;
 
@@ -13,6 +14,14 @@ public class APIStreams {
     public static Observable<RestaurantPlace> getRestaurantList(int radius,String key){
         APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
         return apiInterface.getRestaurantList(radius,key)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(10, TimeUnit.SECONDS);
+    }
+
+    public static Observable<RestaurantDetail> getRestaurantDetail(String placeid, String key){
+        APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
+        return apiInterface.getRestaurantDetail(placeid,key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(10, TimeUnit.SECONDS);
