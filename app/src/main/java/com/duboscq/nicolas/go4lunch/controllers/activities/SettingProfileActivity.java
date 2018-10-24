@@ -126,6 +126,7 @@ public class SettingProfileActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.popup_message_answer_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        progressBar.setVisibility(View.VISIBLE);
                         deleteUserFromFirebase();
                     }
                 })
@@ -205,6 +206,7 @@ public class SettingProfileActivity extends AppCompatActivity {
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
     private void deleteUserFromFirebase(){
+
         if (this.getCurrentUser() != null) {
             AuthUI.getInstance()
                     .delete(this)
@@ -231,6 +233,7 @@ public class SettingProfileActivity extends AppCompatActivity {
             public void onSuccess(Void aVoid) {
                 switch (origin){
                     case DELETE_USER_TASK:
+                        progressBar.setVisibility(View.GONE);
                         Intent close = new Intent(getApplicationContext(),AuthActivity.class);
                         startActivity(close);
                         break;

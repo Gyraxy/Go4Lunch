@@ -65,6 +65,7 @@ public class RestaurantActivity extends AppCompatActivity {
     String NETWORK = "NETWORK";
     String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http;
     User modelCurrentUser;
+    int REQUEST_PHONE_CALL = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,12 +101,14 @@ public class RestaurantActivity extends AppCompatActivity {
     @OnClick(R.id.activity_restaurant_call_btn)
     public void callRestaurant() {
         if (restaurant_phone_http != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
+            } else {
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
                 callIntent.setData(Uri.parse("tel:" + restaurant_phone_http));
                 startActivity(callIntent);
-            } else Toast.makeText(this,"Phone Permission not accepted",Toast.LENGTH_SHORT).show();
-        }else Toast.makeText(this,"No PhoneNumber",Toast.LENGTH_SHORT).show();
+            }
+        }else Toast.makeText(this,"No Phone Number",Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.activity_restaurant_like_btn)

@@ -11,9 +11,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class APIStreams {
-    public static Observable<RestaurantPlace> getRestaurantList(int radius,String key){
+    public static Observable<RestaurantPlace> getRestaurantList(int radius,String key,String location){
         APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
-        return apiInterface.getRestaurantList(radius,key)
+        return apiInterface.getRestaurantList(radius,key,location)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(10, TimeUnit.SECONDS);
