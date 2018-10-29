@@ -1,16 +1,13 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
-import android.Manifest;
+
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,42 +18,27 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.RestaurantListRecyclerViewAdapter;
-import com.duboscq.nicolas.go4lunch.api.APIStreams;
+import com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
-import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
+import com.duboscq.nicolas.go4lunch.models.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.utils.DividerItemDecoration;
 import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
-import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 
 public class RestaurantFragment extends Fragment {
 
     //FOR DESIGN
     @BindView(R.id.fragment_restaurant_recycler_view) RecyclerView restaurant_recyclerView;
-    @BindView(R.id.fragment_restaurant_swipe_container) SwipeRefreshLayout swipeRefreshLayout;
 
     //FOR DATA
-    List<Result> restaurant_list;
     RestaurantListRecyclerViewAdapter adapter;
-    private Disposable disposable;
-    String NETWORK = "NETWORK";
-    Location mLastLocation;
-    String my_location;
-    FusedLocationProviderClient mFusedLocationClient;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    RestaurantViewModel mModel;
+    List<Result> restaurant_list;
 
 
     public RestaurantFragment() { }
@@ -64,15 +46,23 @@ public class RestaurantFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
         ButterKnife.bind(this, view);
-        getMyLocation();
-        configureOnClickRecyclerView();
+        mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
+        mModel.getRestaurantResult().observe(this, new android.arch.lifecycle.Observer<List<Result>>() {
+            @Override
+            public void onChanged(@Nullable List<Result> results) {
+                if (results != null){
+                    restaurant_list = mModel.getRestaurantResult().getValue();
+                    configureRecyclerView();
+                    configureOnClickRecyclerView();
+                }
+            }
+        });
         return view;
     }
 
@@ -83,11 +73,9 @@ public class RestaurantFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        this.restaurant_list = new ArrayList<>();
-        this.adapter = new RestaurantListRecyclerViewAdapter(this.restaurant_list,mLastLocation.getLatitude(),mLastLocation.getLongitude(),Glide.with(this));
+        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,48.8646983,2.349,Glide.with(this));
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        // Add custom divider between Recycler's views
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(restaurant_recyclerView.getContext(), R.drawable.horizontal_divider);
         restaurant_recyclerView.addItemDecoration(mDividerItemDecoration);
     }
@@ -110,60 +98,5 @@ public class RestaurantFragment extends Fragment {
                         startActivity(i);
                     }
                 });
-    }
-
-    public void configureSwipeRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getMyLocation();
-            }
-        });
-    }
-
-    public void getMyLocation(){
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mLastLocation = location;
-                        my_location = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
-                        configureRecyclerView();
-                        configureAndShowRestaurantList();
-                        configureSwipeRefreshLayout();
-                    }
-                }
-            });
-        } else {
-            PermissionUtils.requestPermission((AppCompatActivity) getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-        }
-    }
-
-    public void configureAndShowRestaurantList() {
-        disposable = APIStreams.getRestaurantList(100,getString(R.string.api_google_place_key),my_location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
-            @Override
-            public void onNext(RestaurantPlace restaurantPlace) {
-                Log.i(NETWORK, "RestauFragment : On Next");
-                if (!restaurant_list.isEmpty()){
-                    restaurant_list.clear();
-                }
-                restaurant_list.addAll(restaurantPlace.getResults());
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.i(NETWORK, "RestauFragment : On Error " + Log.getStackTraceString(e));
-            }
-
-            @Override
-            public void onComplete() {
-                Log.i(NETWORK, "RestauFragment : On Complete !!");
-                swipeRefreshLayout.setRefreshing(false);
-                adapter.notifyDataSetChanged();
-            }
-        });
     }
 }

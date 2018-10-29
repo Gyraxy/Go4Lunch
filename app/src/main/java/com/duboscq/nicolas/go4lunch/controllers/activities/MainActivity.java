@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
+import com.duboscq.nicolas.go4lunch.models.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -58,12 +60,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RestaurantFragment restaurantFragment;
     WorkmatesFragment workmatesFragment;
     FragmentManager fragmentManager = getSupportFragmentManager();
+    RestaurantViewModel mModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        mModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();

@@ -56,7 +56,6 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
                 String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
                         restaurantPlaceResult.getPhotos().get(0).getPhotoReference()+
                         "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
-                Log.i("PHOTO", restaurantPictureUrl);
                 glide.load(restaurantPictureUrl).into(restaurant_picture_imv);
             }
         } else glide.load(R.drawable.no_camera).into(restaurant_picture_imv);
