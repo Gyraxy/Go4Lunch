@@ -1,4 +1,4 @@
-package com.duboscq.nicolas.go4lunch.models;
+package com.duboscq.nicolas.go4lunch.models.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -19,6 +19,12 @@ public class RestaurantViewModel extends ViewModel {
     private MutableLiveData<List<Result>> restaurant_result;
     private Disposable disposable;
     private String NETWORK = "NETWORK";
+    private String key,location;
+
+    public RestaurantViewModel(String key,String location) {
+        this.key = key;
+        this.location = location;
+    }
 
     public LiveData<List<Result>> getRestaurantResult() {
         if (restaurant_result == null) {
@@ -29,8 +35,7 @@ public class RestaurantViewModel extends ViewModel {
     }
 
     private void loadRestaurantResult() {
-        // Do an asynchronous operation to fetch users.
-        disposable = APIStreams.getRestaurantList(100,"AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4","48.8646983,2.349").subscribeWith(new DisposableObserver<RestaurantPlace>() {
+        disposable = APIStreams.getRestaurantList(100,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
             @Override
             public void onNext(RestaurantPlace restaurantPlace) {
                 Log.i(NETWORK, "ViewModel: On Next");

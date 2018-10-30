@@ -1,7 +1,10 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +12,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -30,9 +34,15 @@ import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
-import com.duboscq.nicolas.go4lunch.models.RestaurantViewModel;
+import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
+import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModelFactory;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,23 +65,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     TextView profile_name_txt,profile_email_txt;
     MapViewFragment mapViewFragment;
     RestaurantFragment restaurantFragment;
     WorkmatesFragment workmatesFragment;
     FragmentManager fragmentManager = getSupportFragmentManager();
     RestaurantViewModel mModel;
+    String key,
+            my_location="48.8647,2.349";
+    FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
+        key = getString(R.string.api_google_place_key);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        createModelViewandInitFragment();
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
-        initFragment();
         configureBottomOnClick();
         updateProfileData();
     }
@@ -220,6 +235,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // -----
     // UTILS
     // -----
+
+    private void createModelViewandInitFragment(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        my_location = location.getLatitude() + "," + location.getLongitude();
+                        mModel = ViewModelProviders.of(MainActivity.this,new RestaurantViewModelFactory(key,my_location)).get(RestaurantViewModel.class);
+                        initFragment();
+                    }
+                }
+            });
+        } else {
+            PermissionUtils.requestPermission((AppCompatActivity) this, LOCATION_PERMISSION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION, true);
+        }
+    }
 
     private void signOutUserFromFirebase() {
         AuthUI.getInstance()

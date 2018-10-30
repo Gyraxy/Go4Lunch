@@ -13,16 +13,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.controllers.activities.ChatActivity;
-import com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
-import com.duboscq.nicolas.go4lunch.models.RestaurantViewModel;
+import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
