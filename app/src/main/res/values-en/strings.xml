@@ -95,5 +95,7 @@
     <string name="restaurant_no_phone">"There is no phone number."</string>
     <string name="restaurant_already_chosen">"You already choose this restaurant."</string>
     <string name="restaurant_chosen">"You have chosen this restaurant as your lunch."</string>
+    <string name="workmate_joining">" is joining."</string>
+
 
 </resources>

@@ -34,19 +34,15 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.restaurant_list_two_star_imv) ImageView restaurant_two_star_imv;
     @BindView(R.id.restaurant_list_three_star_imv) ImageView restaurant_three_star_imv;
 
-    //FOR DATA
-    private Location restaurant_location,my_location;
-    private String distance,restaurant_distance_stg;
-
     public RestaurantViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
-    public void updateRestaurantInfo(Result restaurantPlaceResult,double latB,double lngB,RequestManager glide) {
+    public void updateRestaurantInfo(Result restaurantPlaceResult,double latB,double lngB,RequestManager glide,int nb_workmates_joining) {
         restaurant_name_txt.setText(restaurantPlaceResult.getName());
         restaurant_address_txt.setText(restaurantPlaceResult.getVicinity());
-        restaurant_people_chosen_txt.setText("(0)");
+        restaurant_people_chosen_txt.setText("("+nb_workmates_joining+")");
 
         try {
             boolean isOpenNow = restaurantPlaceResult.getOpeningHours().getOpenNow();
@@ -68,19 +64,20 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         } else glide.load(R.drawable.no_camera).into(restaurant_picture_imv);
 
 
-        restaurant_location = new Location("point A");
+        //FOR DATA
+        Location restaurant_location = new Location("point A");
         restaurant_location.setLatitude(restaurantPlaceResult.getGeometry().getLocation().getLat());
         restaurant_location.setLongitude(restaurantPlaceResult.getGeometry().getLocation().getLng());
 
-        my_location = new Location ("point B");
+        Location my_location = new Location("point B");
         my_location.setLatitude(latB);
         my_location.setLongitude(lngB);
 
         DecimalFormat df = new DecimalFormat("0.0");
         df.setRoundingMode(RoundingMode.HALF_UP);
 
-        distance = formatDistance(restaurant_location.distanceTo(my_location));
-        restaurant_distance_stg= distance + " m";
+        String distance = formatDistance(restaurant_location.distanceTo(my_location));
+        String restaurant_distance_stg = distance + " m";
         restaurant_distance_txt.setText(restaurant_distance_stg);
 
         showRestaurantRating(restaurantPlaceResult.getPlaceId());

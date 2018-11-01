@@ -95,5 +95,7 @@
     <string name="restaurant_no_phone">"Aucun numéro de téléphone disponible."</string>
     <string name="restaurant_already_chosen">"Vous avez déja choisi ce restaurant."</string>
     <string name="restaurant_chosen">"Vous avez choisi ce restaurant pour manger."</string>
+    <string name="workmate_joining">" sera présent."</string>
+
 
 </resources>

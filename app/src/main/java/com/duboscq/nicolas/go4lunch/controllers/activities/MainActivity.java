@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         key = getString(R.string.api_google_place_key);
         todayDate = getDateTime();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        createModelViewandInitFragment();
+        createModelViewAndInitFragment();
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
@@ -214,9 +214,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //FRAGMENT
     //--------
 
-    private void initFragment() {
+    private void initFragment(double user_lat, double user_lng ) {
         mapViewFragment = new MapViewFragment();
-        restaurantFragment = new RestaurantFragment();
+        restaurantFragment = new RestaurantFragment(user_lat, user_lng);
         workmatesFragment = new WorkmatesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity_frame_layout,workmatesFragment).hide(workmatesFragment);
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // UTILS
     // -----
 
-    private void createModelViewandInitFragment(){
+    private void createModelViewAndInitFragment(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (location != null) {
                         my_location = location.getLatitude() + "," + location.getLongitude();
                         mModel = ViewModelProviders.of(MainActivity.this,new RestaurantViewModelFactory(key,my_location)).get(RestaurantViewModel.class);
-                        initFragment();
+                        initFragment(location.getLatitude(),location.getLongitude());
                     }
                 }
             });

@@ -34,6 +34,10 @@ public class UserHelper {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
+    public static Query getAllRestaurantWorkmates(String collection_name, String restaurant_uid, String users_date) {
+        return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection(users_date);
+    }
+
     // --- UPDATE ---
 
     public static Task<Void> updateUsername(String username, String uid) {
@@ -59,4 +63,7 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).delete();
     }
 
+    public static Task<Void> deleteUserInRestaurantList(String restaurant_uid, String users_date, String user_uid) {
+        return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection(users_date).document(user_uid).delete();
+    }
 }

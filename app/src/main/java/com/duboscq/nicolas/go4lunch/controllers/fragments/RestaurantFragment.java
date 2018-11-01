@@ -36,9 +36,13 @@ public class RestaurantFragment extends Fragment {
     RestaurantListRecyclerViewAdapter adapter;
     RestaurantViewModel mModel;
     List<Result> restaurant_list;
+    double user_lat,user_lng;
 
 
-    public RestaurantFragment() { }
+    public RestaurantFragment( double user_lat, double user_lng ) {
+        this.user_lat= user_lat;
+        this.user_lng = user_lng;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,7 @@ public class RestaurantFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,48.8646983,2.349,Glide.with(this));
+        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),0);
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(restaurant_recyclerView.getContext(), R.drawable.horizontal_divider);

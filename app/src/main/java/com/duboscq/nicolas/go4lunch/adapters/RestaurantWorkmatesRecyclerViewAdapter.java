@@ -11,24 +11,26 @@ import com.duboscq.nicolas.go4lunch.views.WorkmatesViewHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-public class WorkmatesRecyclerViewAdapter extends FirestoreRecyclerAdapter<User, WorkmatesViewHolder> {
+public class RestaurantWorkmatesRecyclerViewAdapter extends FirestoreRecyclerAdapter<User, WorkmatesViewHolder> {
 
     //FOR DATA
     private final RequestManager glide;
+    private final String answer;
 
     //FOR COMMUNICATION
-    private Listener callback;
+    private RestaurantWorkmatesRecyclerViewAdapter.Listener callback;
 
-    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback, String idCurrentUser) {
+    public RestaurantWorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, RestaurantWorkmatesRecyclerViewAdapter.Listener callback, String idCurrentUser, String answer) {
         super(options);
         this.glide = glide;
         this.callback = callback;
         String idCurrentUser1 = idCurrentUser;
+        this.answer = answer;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull WorkmatesViewHolder holder, int position, @NonNull User model) {
-        holder.updateWorkmatesInfo(model,this.glide);
+        holder.updateRestaurantChosenWorkmatesInfo(model,this.glide, this.answer);
     }
 
     @NonNull

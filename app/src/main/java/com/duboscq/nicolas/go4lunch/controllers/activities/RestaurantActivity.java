@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -21,16 +23,21 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.adapters.RestaurantWorkmatesRecyclerViewAdapter;
+import com.duboscq.nicolas.go4lunch.adapters.WorkmatesRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
+import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,7 +50,7 @@ import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
-public class RestaurantActivity extends AppCompatActivity {
+public class RestaurantActivity extends AppCompatActivity implements RestaurantWorkmatesRecyclerViewAdapter.Listener{
 
     //FOR DESIGN
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -57,15 +64,18 @@ public class RestaurantActivity extends AppCompatActivity {
     @BindView(R.id.activity_restaurant_one_star) ImageView one_star_imv;
     @BindView(R.id.activity_restaurant_two_star) ImageView two_star_imv;
     @BindView(R.id.activity_restaurant_three_star) ImageView three_star_imv;
+    @BindView(R.id.activity_restaurant_workmates_recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.activity_restaurant_workmates_recycler_view_empty) TextView textViewRecyclerViewEmpty;
 
 
     //FOR DATA
     String restaurant_id,restaurant_image_url;
     private Disposable disposable;
     String NETWORK = "NETWORK";
-    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate;
+    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id;
     User modelCurrentUser;
     int REQUEST_PHONE_CALL = 1;
+    RestaurantWorkmatesRecyclerViewAdapter workmatesRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,16 +86,19 @@ public class RestaurantActivity extends AppCompatActivity {
         disableButtonClick();
         restaurant_id = getIntent().getExtras().getString("restaurant_id",null);
         restaurant_image_url = getIntent().getExtras().getString("restaurant_image_url",null);
+        last_restaurant_chosen_id = SharedPreferencesUtility.getString(this,"LAST_RESTAURANT_CHOSEN");
         todayDate = getDateTime();
         configureAndShowRestaurantList();
         this.getCurrentUserFromFirestore();
         showPictureRestaurant();
         showRestaurantRating();
+        configureRecyclerView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        configureRecyclerView();
         showRestaurantRating();
         UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -100,6 +113,12 @@ public class RestaurantActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        disposable.isDisposed();
     }
 
     // TOOLBAR
@@ -166,6 +185,11 @@ public class RestaurantActivity extends AppCompatActivity {
                     UserHelper.updateUserLunchUrl(user_uid,restaurant_image_url);
                     UserHelper.updateUserLunchDate(user_uid,todayDate);
                     restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                    if (!restaurant_chosen.equals(null)){
+                        UserHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,getCurrentUser().getUid());
+                    }
+                    RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,todayDate,restaurant_image_url);
+                    SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
                     Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
                 }
             }
@@ -241,6 +265,40 @@ public class RestaurantActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // --------------------
+    // UI
+    // --------------------
+
+    //RECYCLERVIEW CONFIGURATION
+    private void configureRecyclerView(){
+
+        this.workmatesRecyclerViewAdapter = new RestaurantWorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllRestaurantWorkmates("restaurant",restaurant_id,"users"+todayDate)), Glide.with(this), this, this.getCurrentUser().getUid(), getString(R.string.workmate_joining));
+        workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                recyclerView.smoothScrollToPosition(workmatesRecyclerViewAdapter.getItemCount()); // Scroll to bottom on new messages
+            }
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantActivity.this));
+        recyclerView.setAdapter(this.workmatesRecyclerViewAdapter);
+    }
+
+    private FirestoreRecyclerOptions<User> generateOptionsForAdapter(Query query){
+        return new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
+                .setLifecycleOwner(this)
+                .build();
+    }
+
+    // --------------------
+    // CALLBACK
+    // --------------------
+
+    @Override
+    public void onDataChanged() {
+        textViewRecyclerViewEmpty.setVisibility(this.workmatesRecyclerViewAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     // --------------------

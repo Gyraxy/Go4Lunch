@@ -36,7 +36,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
 
     //MESSAGE CONTAINER
     @BindView(R.id.activity_chat_item_message_container) RelativeLayout messageContainer;
-    //IMAGE SENDED CONTAINER
+    //IMAGE SENT CONTAINER
     @BindView(R.id.activity_chat_item_message_container_image_sent_cardview) CardView cardViewImageSent;
     @BindView(R.id.activity_chat_item_message_container_image_sent_cardview_image) ImageView imageViewSent;
     //TEXT MESSAGE CONTAINER

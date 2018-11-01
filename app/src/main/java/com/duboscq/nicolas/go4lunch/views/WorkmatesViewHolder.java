@@ -51,4 +51,12 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
+    public void updateRestaurantChosenWorkmatesInfo(User user, RequestManager glide, String workmates_joining) {
+
+        //Upload the image into ImageView
+        glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(workmates_profile_imv);
+
+        workmates_answer_txt.setText(workmates_joining);
+    }
 }
