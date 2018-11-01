@@ -40,7 +40,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:textColor="@color/WhiteColor"
-                />
+                android:maxWidth="200dp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <ImageView
                 android:id="@+id/activity_restaurant_one_star"

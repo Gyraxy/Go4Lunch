@@ -1,5 +1,7 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,7 +20,11 @@ import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.WorkmatesRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
+import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
+import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,7 +83,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     //RECYCLERVIEW CONFIGURATION
     private void configureRecyclerView(){
 
-        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, this.getCurrentUser().getUid(),getString(R.string.workmates_is_eating));
+        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, this.getCurrentUser().getUid());
         workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -94,6 +100,17 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
                 .setQuery(query, User.class)
                 .setLifecycleOwner(this)
                 .build();
+    }
+
+    private void configureOnClickRecyclerView() {
+        ItemClickSupport.addTo(recyclerView, R.layout.fragment_restaurant)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener(){
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        Intent i = new Intent(getActivity(), RestaurantActivity.class);
+                        startActivity(i);
+                    }
+                });
     }
 
     // --------------------

@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
+import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,40 +32,38 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import butterknife.OnItemSelected;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
 public class RestaurantActivity extends AppCompatActivity {
 
     //FOR DESIGN
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.activity_restaurant_image_imv)
-    ImageView restaurant_picture_imv;
-    @BindView(R.id.activity_restaurant_name_txt)
-    TextView restaurant_name_txt;
-    @BindView(R.id.activity_restaurant_adress_txt)
-    TextView restaurant_adress_txt;
-    @BindView(R.id.activity_restaurant_call_btn)
-    Button restaurant_call_btn;
-    @BindView(R.id.activity_restaurant_like_btn)
-    Button restaurant_like_btn;
-    @BindView(R.id.activity_restaurant_website_btn)
-    Button restaurant_website_btn;
-    @BindView(R.id.activity_restaurant_selection_floating_btn)
-    FloatingActionButton restaurant_selection;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.activity_restaurant_image_imv) ImageView restaurant_picture_imv;
+    @BindView(R.id.activity_restaurant_name_txt) TextView restaurant_name_txt;
+    @BindView(R.id.activity_restaurant_adress_txt) TextView restaurant_adress_txt;
+    @BindView(R.id.activity_restaurant_call_btn) Button restaurant_call_btn;
+    @BindView(R.id.activity_restaurant_like_btn) Button restaurant_like_btn;
+    @BindView(R.id.activity_restaurant_website_btn) Button restaurant_website_btn;
+    @BindView(R.id.activity_restaurant_selection_floating_btn) FloatingActionButton restaurant_selection;
+    @BindView(R.id.activity_restaurant_one_star) ImageView one_star_imv;
+    @BindView(R.id.activity_restaurant_two_star) ImageView two_star_imv;
+    @BindView(R.id.activity_restaurant_three_star) ImageView three_star_imv;
 
 
     //FOR DATA
     String restaurant_id,restaurant_image_url;
     private Disposable disposable;
     String NETWORK = "NETWORK";
-    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http;
+    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate;
     User modelCurrentUser;
     int REQUEST_PHONE_CALL = 1;
 
@@ -76,9 +76,30 @@ public class RestaurantActivity extends AppCompatActivity {
         disableButtonClick();
         restaurant_id = getIntent().getExtras().getString("restaurant_id",null);
         restaurant_image_url = getIntent().getExtras().getString("restaurant_image_url",null);
+        todayDate = getDateTime();
         configureAndShowRestaurantList();
         this.getCurrentUserFromFirestore();
         showPictureRestaurant();
+        showRestaurantRating();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showRestaurantRating();
+        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                String restaurant_chosen = user.getLunch();
+                if (restaurant_chosen.equals(restaurant_id)){
+                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                }
+                else {
+                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.WhiteColor)));
+                }
+            }
+        });
     }
 
     // TOOLBAR
@@ -95,7 +116,7 @@ public class RestaurantActivity extends AppCompatActivity {
         if (restaurant_website_http != null) {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(restaurant_website_http));
             startActivity(browserIntent);
-        } else Toast.makeText(this, "No Website", Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(this, getString(R.string.restaurant_no_website), Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.activity_restaurant_call_btn)
@@ -108,13 +129,47 @@ public class RestaurantActivity extends AppCompatActivity {
                 callIntent.setData(Uri.parse("tel:" + restaurant_phone_http));
                 startActivity(callIntent);
             }
-        }else Toast.makeText(this,"No Phone Number",Toast.LENGTH_SHORT).show();
+        }else Toast.makeText(this,getString(R.string.restaurant_no_phone),Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.activity_restaurant_like_btn)
     public void addLikeRestaurant() {
         Toast.makeText(this,getString(R.string.restaurant_like_action),Toast.LENGTH_SHORT).show();
-        RestaurantHelper.createRestaurant(restaurant_id,+1);
+        RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+
+                if (restaurant == null){
+                    RestaurantHelper.createRestaurant(restaurant_id,1);
+                } else {
+                    int nb_likes = restaurant.getLikes();
+                    RestaurantHelper.updateRestaurantLikes(restaurant_id,nb_likes+1);
+                }
+            }
+        });
+    }
+
+    @OnClick(R.id.activity_restaurant_selection_floating_btn)
+    public void chooseRestaurant() {
+        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                String user_uid = user.getUid();
+                String restaurant_chosen = user.getLunch();
+                if (restaurant_chosen.equals(restaurant_id)){
+                    Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_already_chosen),Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    UserHelper.updateUserLunch(user_uid,restaurant_id);
+                    UserHelper.updateUserLunchUrl(user_uid,restaurant_image_url);
+                    UserHelper.updateUserLunchDate(user_uid,todayDate);
+                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                    Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     public void configureAndShowRestaurantList() {
@@ -159,12 +214,47 @@ public class RestaurantActivity extends AppCompatActivity {
         restaurant_website_btn.setClickable(false);
     }
 
+    public void showRestaurantRating(){
+        RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                if (restaurant != null){
+                    int nb_likes = restaurant.getLikes();
+                    if (1 < nb_likes && nb_likes<6){
+                        one_star_imv.setVisibility(View.VISIBLE);
+                        two_star_imv.setVisibility(View.INVISIBLE);
+                        three_star_imv.setVisibility(View.INVISIBLE);
+                    } else if (5 < nb_likes && nb_likes<10){
+                        one_star_imv.setVisibility(View.VISIBLE);
+                        two_star_imv.setVisibility(View.VISIBLE);
+                        three_star_imv.setVisibility(View.INVISIBLE);
+                    } else if (10 < nb_likes) {
+                        one_star_imv.setVisibility(View.VISIBLE);
+                        two_star_imv.setVisibility(View.VISIBLE);
+                        three_star_imv.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    one_star_imv.setVisibility(View.INVISIBLE);
+                    two_star_imv.setVisibility(View.INVISIBLE);
+                    three_star_imv.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+    }
+
     // --------------------
     // UTILS
     // --------------------
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
 
     // --------------------
     // REST REQUESTS

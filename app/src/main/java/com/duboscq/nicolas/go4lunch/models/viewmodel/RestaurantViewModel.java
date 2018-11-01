@@ -35,7 +35,7 @@ public class RestaurantViewModel extends ViewModel {
     }
 
     private void loadRestaurantResult() {
-        disposable = APIStreams.getRestaurantList(100,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
+        disposable = APIStreams.getRestaurantList(20,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
             @Override
             public void onNext(RestaurantPlace restaurantPlace) {
                 Log.i(NETWORK, "ViewModel: On Next");

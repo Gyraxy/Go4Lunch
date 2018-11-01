@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,10 +31,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
+import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModelFactory;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
@@ -47,6 +50,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,8 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     WorkmatesFragment workmatesFragment;
     FragmentManager fragmentManager = getSupportFragmentManager();
     RestaurantViewModel mModel;
-    String key,
-            my_location="48.8647,2.349";
+    String key,my_location,todayDate;
     FusedLocationProviderClient mFusedLocationClient;
 
     @Override
@@ -82,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         key = getString(R.string.api_google_place_key);
+        todayDate = getDateTime();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         createModelViewandInitFragment();
         configureToolBar();
@@ -132,6 +140,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(i_profile);
                 break;
             case R.id.activity_main_your_lunch:
+                UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        User current_user = documentSnapshot.toObject(User.class);
+                        String your_lunch = current_user.getLunch();
+                        String your_lunch_url = current_user.getLunchUrl();
+                        String your_lunch_date = current_user.getLunchDate();
+                        if (your_lunch == null || !todayDate.equals(your_lunch_date)){
+                            Toast.makeText(MainActivity.this,"You did not choose your lunch yet.",Toast.LENGTH_SHORT).show();
+                        } else if (todayDate.equals(your_lunch_date) && your_lunch != null){
+                            Intent i_lunch = new Intent(MainActivity.this,RestaurantActivity.class);
+                            i_lunch.putExtra("restaurant_id",your_lunch);
+                            i_lunch.putExtra("restaurant_image_url",your_lunch_url);
+                            startActivity(i_lunch);
+                        }
+                    }
+                });
                 break;
             case R.id.activity_main_settings:
                 Intent i_setting = new Intent(this, SettingProfileActivity.class);
@@ -278,4 +303,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
 }

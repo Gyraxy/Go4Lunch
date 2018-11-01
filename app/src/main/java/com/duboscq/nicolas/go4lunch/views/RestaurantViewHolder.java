@@ -9,7 +9,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
+import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -26,6 +30,9 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.restaurant_list_distance_txt) TextView restaurant_distance_txt;
     @BindView(R.id.restaurant_list_opening_txt) TextView restaurant_openingTimes_txt;
     @BindView(R.id.restaurant_list_photo_imv) ImageView restaurant_picture_imv;
+    @BindView(R.id.restaurant_list_one_star_imv) ImageView restaurant_one_star_imv;
+    @BindView(R.id.restaurant_list_two_star_imv) ImageView restaurant_two_star_imv;
+    @BindView(R.id.restaurant_list_three_star_imv) ImageView restaurant_three_star_imv;
 
     //FOR DATA
     private Location restaurant_location,my_location;
@@ -75,11 +82,42 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         distance = formatDistance(restaurant_location.distanceTo(my_location));
         restaurant_distance_stg= distance + " m";
         restaurant_distance_txt.setText(restaurant_distance_stg);
+
+        showRestaurantRating(restaurantPlaceResult.getPlaceId());
     }
 
     private String formatDistance(double distance){
         DecimalFormat df = new DecimalFormat("0.0");
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(distance);
+    }
+
+    private void showRestaurantRating(String restaurant_id){
+        RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                if (restaurant != null){
+                    int nb_likes = restaurant.getLikes();
+                    if (1 < nb_likes && nb_likes<6){
+                        restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                        restaurant_two_star_imv.setVisibility(View.INVISIBLE);
+                        restaurant_three_star_imv.setVisibility(View.INVISIBLE);
+                    } else if (5 < nb_likes && nb_likes<10){
+                        restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                        restaurant_two_star_imv.setVisibility(View.VISIBLE);
+                        restaurant_three_star_imv.setVisibility(View.INVISIBLE);
+                    } else if (10 < nb_likes) {
+                        restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                        restaurant_two_star_imv.setVisibility(View.VISIBLE);
+                        restaurant_three_star_imv.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    restaurant_one_star_imv.setVisibility(View.INVISIBLE);
+                    restaurant_two_star_imv.setVisibility(View.INVISIBLE);
+                    restaurant_three_star_imv.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 }

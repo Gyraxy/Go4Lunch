@@ -184,14 +184,16 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     }
 
     private void generateMarkersOnMap(List<Result> restaurant_result){
-        for (int i = 0; i<restaurant_result.size();i++){
-            Double lat = restaurant_result.get(i).getGeometry().getLocation().getLat();
-            Double lng = restaurant_result.get(i).getGeometry().getLocation().getLng();
-            LatLng restaurant = new LatLng(lat,lng);
-            String restaurant_name = restaurant_result.get(i).getName();
-            mMap.addMarker(new MarkerOptions()
-                    .position(restaurant)
-                    .title(restaurant_name));
+        if (restaurant_result != null){
+            for (int i = 0; i<restaurant_result.size();i++) {
+                Double lat = restaurant_result.get(i).getGeometry().getLocation().getLat();
+                Double lng = restaurant_result.get(i).getGeometry().getLocation().getLng();
+                LatLng restaurant = new LatLng(lat, lng);
+                String restaurant_name = restaurant_result.get(i).getName();
+                mMap.addMarker(new MarkerOptions()
+                        .position(restaurant)
+                        .title(restaurant_name));
+            }
         }
     }
 

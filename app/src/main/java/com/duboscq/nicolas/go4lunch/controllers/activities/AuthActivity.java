@@ -258,7 +258,7 @@ public class AuthActivity extends AppCompatActivity {
             String username = this.getCurrentUser().getDisplayName();
             String uid = this.getCurrentUser().getUid();
 
-            UserHelper.createUser(uid, username, urlPicture).addOnFailureListener(this.onFailureListener());
+            UserHelper.createUser(uid, username, urlPicture, null, null, null).addOnFailureListener(this.onFailureListener());
         }
     }
 

@@ -43,6 +43,7 @@
         <item name="android:textColor">@color/colorBlack</item>
     </style>
 
+    <!-- RESTAURANT ACTIVITY BUTTON STYLE -->
     <style name="Button_detail_restaurant" parent="Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored">
         <item name="android:background">@color/WhiteColor</item>
         <item name="android:textColor">@color/colorPrimary</item>

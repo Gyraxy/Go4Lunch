@@ -1,25 +1,22 @@
 package com.duboscq.nicolas.go4lunch.models.firebase;
 
-
 public class Restaurant {
 
-    private String restaurant_name;
-    private int numberOfLikes;
+    private int likes;
 
     public Restaurant() { }
 
-    public Restaurant(String restaurant, int numberOfLikes) {
-        this.restaurant_name = restaurant_name;
-        this.numberOfLikes = numberOfLikes;
+    public Restaurant(int likes) {
+        this.likes = likes;
     }
 
 
     // --- GETTERS ---
-    public String getRestaurant() { return restaurant_name; }
-    public int getLike() { return numberOfLikes; }
+
+    public int getLikes() { return likes; }
 
     // --- SETTERS ---
-    public void setRestaurant(String restaurant_name) { this.restaurant_name = restaurant_name; }
-    public void setLike(int numberOfLikes) { this.numberOfLikes = numberOfLikes; }
+
+    public void setLikes(int likes) { this.likes = likes; }
 
 }

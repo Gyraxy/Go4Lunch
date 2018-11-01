@@ -6,6 +6,7 @@
 
     <!-- MAIN ACTIVITY -->
     <string name="search">Search</string>
+    <string name="no_lunch_chosen">Vous n\'avez pas encore choisi de restaurant.</string>
 
     <!-- LOGIN ACTIVITY -->
     <string name="auth_subtitle">Find a nice restaurant and invite your co-workers for lunch !</string>
@@ -90,5 +91,9 @@
     <string name="restaurant_nav_like">AIMER</string>
     <string name="restaurant_nav_website">SITE</string>
     <string name="restaurant_like_action">"Vous ajoutez un "Like" à ca restaurant."</string>
+    <string name="restaurant_no_website">"Aucun site internet disponible."</string>
+    <string name="restaurant_no_phone">"Aucun numéro de téléphone disponible."</string>
+    <string name="restaurant_already_chosen">"Vous avez déja choisi ce restaurant."</string>
+    <string name="restaurant_chosen">"Vous avez choisi ce restaurant pour manger."</string>
 
 </resources>
