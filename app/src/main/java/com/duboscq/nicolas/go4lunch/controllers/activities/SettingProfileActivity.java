@@ -90,30 +90,56 @@ public class SettingProfileActivity extends AppCompatActivity {
         switch (radioButton.getId()) {
             case R.id.activity_setting_language_fr_rbtn:
                 if (checked) {
-                    Locale locale = new Locale("fr");
-                    Locale.setDefault(locale);
-                    Configuration config = new Configuration();
-                    config.locale = locale;
-                    getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
-                    SharedPreferencesUtility.putString(this,TAG_LANGUAGE,"français");
-                    Intent refresh = new Intent(SettingProfileActivity.this, SettingProfileActivity.class);
-                    refresh.putExtra("Activity","Settings");
-                    startActivity(refresh);
-                    finish();
+                    AlertDialog.Builder language_diag = new AlertDialog.Builder(this);
+                    language_diag.setMessage(getString(R.string.dialog_message))
+                            .setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Locale locale = new Locale("fr");
+                                    Locale.setDefault(locale);
+                                    Configuration config = new Configuration();
+                                    config.locale = locale;
+                                    getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+                                    SharedPreferencesUtility.putString(getApplicationContext(), TAG_LANGUAGE, "français");
+                                    Intent refresh = new Intent(SettingProfileActivity.this, AuthActivity.class);
+                                    startActivity(refresh);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.dialog_btn_no), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                    language_diag.show();
                 }
                 break;
             case R.id.activity_setting_language_en_rbtn:
                 if (checked) {
-                    Locale locale = new Locale("en");
-                    Locale.setDefault(locale);
-                    Configuration config = new Configuration();
-                    config.locale = locale;
-                    getBaseContext().getResources().updateConfiguration(config,getBaseContext().getResources().getDisplayMetrics());
-                    SharedPreferencesUtility.putString(this,TAG_LANGUAGE,"English");
-                    Intent refresh = new Intent(SettingProfileActivity.this, SettingProfileActivity.class);
-                    refresh.putExtra("Activity","Settings");
-                    startActivity(refresh);
-                    finish();
+                    AlertDialog.Builder language_diag = new AlertDialog.Builder(this);
+                    language_diag.setMessage(getString(R.string.dialog_message))
+                            .setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Locale locale = new Locale("en");
+                                    Locale.setDefault(locale);
+                                    Configuration config = new Configuration();
+                                    config.locale = locale;
+                                    getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+                                    SharedPreferencesUtility.putString(getApplicationContext(),TAG_LANGUAGE,"English");
+                                    Intent refresh = new Intent(SettingProfileActivity.this, AuthActivity.class);
+                                    startActivity(refresh);
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton(getString(R.string.dialog_btn_no), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                    language_diag.show();
                 }
                 break;
         }
@@ -164,8 +190,6 @@ public class SettingProfileActivity extends AppCompatActivity {
         if (language == null){
             radio_language = Locale.getDefault().getDisplayLanguage();
         } else radio_language = language;
-
-        Log.i("APP","APP Language "+radio_language);
 
         switch (radio_language){
             case "français":

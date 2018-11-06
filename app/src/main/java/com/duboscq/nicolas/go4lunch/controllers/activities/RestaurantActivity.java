@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +25,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.RestaurantWorkmatesRecyclerViewAdapter;
-import com.duboscq.nicolas.go4lunch.adapters.WorkmatesRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
@@ -49,6 +49,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class RestaurantActivity extends AppCompatActivity implements RestaurantWorkmatesRecyclerViewAdapter.Listener{
 
@@ -74,7 +76,8 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     String NETWORK = "NETWORK";
     String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id;
     User modelCurrentUser;
-    int REQUEST_PHONE_CALL = 1;
+    private static final int REQUEST_PHONE_CALL = 1;
+    private static final String PERMS = Manifest.permission.CALL_PHONE;
     RestaurantWorkmatesRecyclerViewAdapter workmatesRecyclerViewAdapter;
 
     @Override
@@ -88,6 +91,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         restaurant_image_url = getIntent().getExtras().getString("restaurant_image_url",null);
         last_restaurant_chosen_id = SharedPreferencesUtility.getString(this,"LAST_RESTAURANT_CHOSEN");
         todayDate = getDateTime();
+        checkRestaurantchosen();
         configureAndShowRestaurantList();
         this.getCurrentUserFromFirestore();
         showPictureRestaurant();
@@ -98,21 +102,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     @Override
     protected void onResume() {
         super.onResume();
-        configureRecyclerView();
         showRestaurantRating();
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                String restaurant_chosen = user.getLunch();
-                if (restaurant_chosen.equals(restaurant_id)){
-                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-                }
-                else {
-                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.WhiteColor)));
-                }
-            }
-        });
     }
 
     @Override
@@ -138,17 +128,10 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         } else Toast.makeText(this, getString(R.string.restaurant_no_website), Toast.LENGTH_SHORT).show();
     }
 
+    @AfterPermissionGranted(REQUEST_PHONE_CALL)
     @OnClick(R.id.activity_restaurant_call_btn)
-    public void callRestaurant() {
-        if (restaurant_phone_http != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
-            } else {
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse("tel:" + restaurant_phone_http));
-                startActivity(callIntent);
-            }
-        }else Toast.makeText(this,getString(R.string.restaurant_no_phone),Toast.LENGTH_SHORT).show();
+    public void onClickCallRestaurant() {
+        this.phoneRestaurant();
     }
 
     @OnClick(R.id.activity_restaurant_like_btn)
@@ -177,20 +160,13 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 User user = documentSnapshot.toObject(User.class);
                 String user_uid = user.getUid();
                 String restaurant_chosen = user.getLunch();
-                if (restaurant_chosen.equals(restaurant_id)){
+                String date = user.getLunchDate();
+                if (!date.equals(todayDate)){
+                    userChooseRestaurant(user_uid,restaurant_chosen,user);
+                } else if (date.equals(todayDate) && !restaurant_id.equals(restaurant_chosen)){
+                    userChooseRestaurant(user_uid,restaurant_chosen,user);
+                } else if (date.equals(todayDate) && restaurant_id.equals(restaurant_chosen)){
                     Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_already_chosen),Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    UserHelper.updateUserLunch(user_uid,restaurant_id);
-                    UserHelper.updateUserLunchUrl(user_uid,restaurant_image_url);
-                    UserHelper.updateUserLunchDate(user_uid,todayDate);
-                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-                    if (!restaurant_chosen.equals(null)){
-                        UserHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,getCurrentUser().getUid());
-                    }
-                    RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,todayDate,restaurant_image_url);
-                    SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
-                    Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -267,6 +243,19 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         });
     }
 
+    private void userChooseRestaurant(String user_uid, String restaurant_chosen, User user){
+        UserHelper.updateUserLunch(user_uid,restaurant_id);
+        UserHelper.updateUserLunchUrl(user_uid,restaurant_image_url);
+        UserHelper.updateUserLunchDate(user_uid,todayDate);
+        restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        if (!restaurant_chosen.equals(null)){
+            UserHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,getCurrentUser().getUid());
+        }
+        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,todayDate,restaurant_image_url);
+        SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
+        Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
+    }
+
     // --------------------
     // UI
     // --------------------
@@ -274,7 +263,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     //RECYCLERVIEW CONFIGURATION
     private void configureRecyclerView(){
 
-        this.workmatesRecyclerViewAdapter = new RestaurantWorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllRestaurantWorkmates("restaurant",restaurant_id,"users"+todayDate)), Glide.with(this), this, this.getCurrentUser().getUid(), getString(R.string.workmate_joining));
+        this.workmatesRecyclerViewAdapter = new RestaurantWorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllRestaurantWorkmates(restaurant_id,"users"+todayDate)), Glide.with(this), this, this.getCurrentUser().getUid(), getString(R.string.workmate_joining));
         workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -291,6 +280,21 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 .setLifecycleOwner(this)
                 .build();
     }
+
+    private void checkRestaurantchosen(){
+        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                String restaurant_chosen = user.getLunch();
+                String date_lunch = user.getLunchDate();
+                if (date_lunch.equals(todayDate) && restaurant_chosen.equals(restaurant_id)){
+                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                }
+            }
+        });
+    }
+
 
     // --------------------
     // CALLBACK
@@ -314,6 +318,13 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         return dateFormat.format(date);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // 2 - Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
     // --------------------
     // REST REQUESTS
     // --------------------
@@ -324,5 +335,20 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 modelCurrentUser = documentSnapshot.toObject(User.class);
             }
         });
+    }
+
+    // --------------------
+    // PHONECALL MANAGEMENT
+    // --------------------
+    private void phoneRestaurant(){
+        if (!EasyPermissions.hasPermissions(this, PERMS)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_phone_access), REQUEST_PHONE_CALL, PERMS);
+            return;
+        }
+        if (restaurant_phone_http != null) {
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:" + restaurant_phone_http));
+            startActivity(callIntent);
+        } else Toast.makeText(this,getString(R.string.restaurant_no_phone),Toast.LENGTH_SHORT).show();
     }
 }

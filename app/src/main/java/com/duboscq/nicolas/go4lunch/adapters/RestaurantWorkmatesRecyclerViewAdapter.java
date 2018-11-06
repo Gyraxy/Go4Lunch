@@ -15,7 +15,7 @@ public class RestaurantWorkmatesRecyclerViewAdapter extends FirestoreRecyclerAda
 
     //FOR DATA
     private final RequestManager glide;
-    private final String answer;
+    private final String answer,idCurrentUser;
 
     //FOR COMMUNICATION
     private RestaurantWorkmatesRecyclerViewAdapter.Listener callback;
@@ -24,7 +24,7 @@ public class RestaurantWorkmatesRecyclerViewAdapter extends FirestoreRecyclerAda
         super(options);
         this.glide = glide;
         this.callback = callback;
-        String idCurrentUser1 = idCurrentUser;
+        this.idCurrentUser = idCurrentUser;
         this.answer = answer;
     }
 

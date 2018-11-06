@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -15,20 +16,23 @@ public class WorkmatesRecyclerViewAdapter extends FirestoreRecyclerAdapter<User,
 
     //FOR DATA
     private final RequestManager glide;
+    private String idCurrentUser;
+    private Context context;
 
     //FOR COMMUNICATION
     private Listener callback;
 
-    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback, String idCurrentUser) {
+    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback, String idCurrentUser, Context context) {
         super(options);
         this.glide = glide;
         this.callback = callback;
-        String idCurrentUser1 = idCurrentUser;
+        this.idCurrentUser = idCurrentUser;
+        this.context = context;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull WorkmatesViewHolder holder, int position, @NonNull User model) {
-        holder.updateWorkmatesInfo(model,this.glide);
+        holder.updateWorkmatesInfo(model,this.glide, this.context);
     }
 
     @NonNull

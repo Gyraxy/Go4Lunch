@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.views;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,24 +28,24 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
         workmates_answer_txt = itemView.findViewById(R.id.workmates_answer_txt);
     }
 
-    public void updateWorkmatesInfo(User user, RequestManager glide) {
+    public void updateWorkmatesInfo(User user, RequestManager glide, final Context context) {
 
         //Upload the image into ImageView
         glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(workmates_profile_imv);
 
-        //Show TextView - Workmate has choosen or not
+        //Show TextView - Workmate has chosen or not
         final String workmate_name = user.getUsername();
         UserHelper.getUser(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User workmates = documentSnapshot.toObject(User.class);
                 String workmates_lunch = workmates.getLunch();
-                if (workmates_lunch == null){
-                    answer = workmate_name + " has not choosen yet.";
+                if (workmates_lunch.equals("XXX")){
+                    answer = workmate_name + context.getString(R.string.workmates_not_decided);
                     workmates_answer_txt.setText(answer);
                     workmates_answer_txt.setTypeface(null, Typeface.ITALIC);
-                } else if (workmates_lunch != null){
-                    answer = workmate_name + " is eating.";
+                } else if (!workmates_lunch.equals("XXX")){
+                    answer = workmate_name + context.getString(R.string.workmates_is_eating);
                     workmates_answer_txt.setText(answer);
                     workmates_answer_txt.setTypeface(null, Typeface.NORMAL);
                 }

@@ -1,6 +1,7 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,16 +38,24 @@ public class RestaurantFragment extends Fragment {
     RestaurantViewModel mModel;
     List<Result> restaurant_list;
     double user_lat,user_lng;
+    final static String ARG_LAT = "ARG_LAT",ARG_LNG = "ARG_LNG";
 
-
-    public RestaurantFragment( double user_lat, double user_lng ) {
-        this.user_lat= user_lat;
-        this.user_lng = user_lng;
+    public static RestaurantFragment newInstance(double user_lat, double user_lng) {
+        RestaurantFragment fragment = new RestaurantFragment();
+        Bundle args = new Bundle();
+        args.putDouble(ARG_LAT, user_lat);
+        args.putDouble(ARG_LNG, user_lng);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            user_lat = getArguments().getDouble(ARG_LAT);
+            user_lng = getArguments().getDouble(ARG_LNG);
+        }
     }
 
     @Override
@@ -54,7 +63,7 @@ public class RestaurantFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
         ButterKnife.bind(this, view);
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
-        mModel.getRestaurantResult().observe(this, new android.arch.lifecycle.Observer<List<Result>>() {
+        mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(@Nullable List<Result> results) {
                 if (results != null){

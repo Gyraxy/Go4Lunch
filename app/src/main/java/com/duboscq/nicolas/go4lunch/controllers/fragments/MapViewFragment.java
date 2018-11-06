@@ -1,6 +1,7 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,7 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,6 @@ import com.duboscq.nicolas.go4lunch.controllers.activities.ChatActivity;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
-import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,7 +55,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
 
     //FOR DATA
     private GoogleMap mMap;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     SupportMapFragment mapFragment;
     FusedLocationProviderClient mFusedLocationClient;
     LatLng myLatLng;
@@ -71,11 +70,10 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        enableMyLocation();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         restaurant_list = new ArrayList<>();
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
-        mModel.getRestaurantResult().observe(this, new android.arch.lifecycle.Observer<List<Result>>() {
+        mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(@Nullable List<Result> results) {
                 if (results != null){
@@ -92,7 +90,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         ButterKnife.bind(this, view);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_view);
         mapFragment.getMapAsync(this);
-
         return view;
     }
 
@@ -119,10 +116,10 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        enableMyLocation();
         mMap.setOnMyLocationClickListener(this);
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
             mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -135,9 +132,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                     }
                 }
             });
-        } else {
-            PermissionUtils.requestPermission((AppCompatActivity) getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
     }
 
@@ -148,19 +142,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
-    }
-
-    //PERMISSIONS
-    private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission to access the location is missing.
-            PermissionUtils.requestPermission((AppCompatActivity) getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
-        } else if (mMap != null) {
-            // Access to the location has been granted to the app.
-            mMap.setMyLocationEnabled(true);
-        }
     }
 
     public void centerMyLocation(){
@@ -177,9 +158,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                     }
                 }
             });
-        } else {
-            PermissionUtils.requestPermission((AppCompatActivity) getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
     }
 
@@ -203,6 +181,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             public boolean onMarkerClick(Marker marker) {
                 for (int i = 0; i<restaurant_list.size();i++){
                     if (marker.getTitle().equals(restaurant_list.get(i).getName())){
+                        Log.i("APP","Click Marker");
                         Intent go_restaurant = new Intent(getContext(),RestaurantActivity.class);
                         go_restaurant.putExtra("restaurant_id",restaurant_list.get(i).getPlaceId());
                         if (restaurant_list.get(i).getPhotos() != null) {

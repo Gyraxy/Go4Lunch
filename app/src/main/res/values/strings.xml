@@ -50,14 +50,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
 
-    <!--    Permissions    -->
-    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
-    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
-    <string name="permission_required_toast">Location permission is required for this demo.</string>
-
     <!-- WORKMATES LIST VIEW-->
-    <string name="workmates_is_eating">is eating</string>
-    <string name="workmates_not_decided">has not decided yet</string>
+    <string name="workmates_is_eating">" is eating."</string>
+    <string name="workmates_not_decided">" has not decided yet."</string>
     <string name="workmates_fragment_no_workmates">No Workmates registered</string>
 
     <!-- RESTAURANT LIST VIEW-->
@@ -77,12 +72,14 @@
     <string name="popup_message_answer_no">No</string>
     <string name="info_no_username_found">No Username</string>
     <string name="username_updated">Your username has been updated.</string>
+    <string name="dialog_message">"Changing language require application reboot. Are you sure you want to change language ?"</string>
+    <string name="dialog_btn_yes">"YES"</string>
+    <string name="dialog_btn_no">"NO"</string>
 
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">There are no messages&#8230;</string>
     <string name="chat_activity_text_view_input_title">Write your message</string>
-    <string name="popup_title_permission_files_access">This application needs your permission to work correctly.</string>
     <string name="toast_title_no_image_chosen">No pictures chosen&#8230;</string>
 
     <!-- RESTAURANT ACTIVITY-->
@@ -96,5 +93,10 @@
     <string name="restaurant_already_chosen">"You already choose this restaurant."</string>
     <string name="restaurant_chosen">"You have chosen this restaurant as your lunch."</string>
     <string name="workmate_joining">" is joining."</string>
+
+    <!-- PERMISSION -->
+    <string name="popup_title_permission_phone_access">This application needs your permission to access to your phone to work properly.</string>
+    <string name="popup_title_permission_files_access">This application needs your permission to work correctly.</string>
+    <string name="popup_title_permission_location_access">This application needs your location. Do you accept ?</string>
 
 </resources>

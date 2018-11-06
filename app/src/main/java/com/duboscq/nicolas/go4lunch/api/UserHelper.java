@@ -34,7 +34,7 @@ public class UserHelper {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    public static Query getAllRestaurantWorkmates(String collection_name, String restaurant_uid, String users_date) {
+    public static Query getAllRestaurantWorkmates(String restaurant_uid, String users_date) {
         return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection(users_date);
     }
 

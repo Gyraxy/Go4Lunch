@@ -31,21 +31,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
-import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
-import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
+import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModelFactory;
-import com.duboscq.nicolas.go4lunch.models.firebase.User;
-import com.duboscq.nicolas.go4lunch.utils.PermissionUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -85,18 +80,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("APP","Main Activity On create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         key = getString(R.string.api_google_place_key);
         todayDate = getDateTime();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        createModelViewAndInitFragment();
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
         configureBottomOnClick();
         updateProfileData();
+        createModelViewAndInitFragment();
     }
 
     // -------------
@@ -147,9 +143,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         String your_lunch = current_user.getLunch();
                         String your_lunch_url = current_user.getLunchUrl();
                         String your_lunch_date = current_user.getLunchDate();
-                        if (your_lunch == null || !todayDate.equals(your_lunch_date)){
+                        if (your_lunch.equals("XXX") || !todayDate.equals(your_lunch_date)){
                             Toast.makeText(MainActivity.this,"You did not choose your lunch yet.",Toast.LENGTH_SHORT).show();
-                        } else if (todayDate.equals(your_lunch_date) && your_lunch != null){
+                        } else if (todayDate.equals(your_lunch_date) && !your_lunch.equals("XXX")){
                             Intent i_lunch = new Intent(MainActivity.this,RestaurantActivity.class);
                             i_lunch.putExtra("restaurant_id",your_lunch);
                             i_lunch.putExtra("restaurant_image_url",your_lunch_url);
@@ -216,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initFragment(double user_lat, double user_lng ) {
         mapViewFragment = new MapViewFragment();
-        restaurantFragment = new RestaurantFragment(user_lat, user_lng);
+        restaurantFragment = RestaurantFragment.newInstance(user_lat, user_lng);
         workmatesFragment = new WorkmatesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.main_activity_frame_layout,workmatesFragment).hide(workmatesFragment);
@@ -275,8 +271,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         } else {
-            PermissionUtils.requestPermission((AppCompatActivity) this, LOCATION_PERMISSION_REQUEST_CODE,
-                    Manifest.permission.ACCESS_FINE_LOCATION, true);
         }
     }
 

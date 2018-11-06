@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -7,29 +8,39 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
+import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 
-public class AuthActivity extends AppCompatActivity {
+public class AuthActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     //FOR DESIGN
     @BindView(R.id.login_facebook_imv) ImageView login_facebook_btn;
@@ -39,6 +50,8 @@ public class AuthActivity extends AppCompatActivity {
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
     private static final int SIGN_OUT_TASK = 10;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String PERMS = Manifest.permission.ACCESS_FINE_LOCATION;
     String language;
     String TAG_LANGUAGE = "TAG_LANGUAGE";
 
@@ -63,12 +76,15 @@ public class AuthActivity extends AppCompatActivity {
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
-    //ACTIONS
+    // -------
+    // ACTIONS
+    // -------
 
+    // Authentification with Facebook
     @OnClick(R.id.login_facebook_imv)
     public void onClickFacebookLogin() {
         if (checkProviderLogged().equals("facebook")){
-            startMainActivity();
+            enableLocation();
         } else if (checkProviderLogged().equals("google")) {
             signOutUserFromFirebase();
             startSignInFacebook();
@@ -78,10 +94,11 @@ public class AuthActivity extends AppCompatActivity {
         }
     }
 
+    // Authentification with Google
     @OnClick(R.id.login_google_imv)
     public void onClickGoogleLogin() {
         if (checkProviderLogged().equals("google")){
-            startMainActivity();
+            enableLocation();
         } else if (checkProviderLogged().equals("facebook")) {
             signOutUserFromFirebase();
             startSignInGooglePlus();
@@ -89,11 +106,6 @@ public class AuthActivity extends AppCompatActivity {
         else {
             startSignInGooglePlus();
         }
-    }
-
-    public void startMainActivity() {
-        Intent login = new Intent(this, MainActivity.class);
-        startActivity(login);
     }
 
     // ----
@@ -126,6 +138,7 @@ public class AuthActivity extends AppCompatActivity {
     // LANGUAGE PREFERENCES
     // --------------------
 
+    //Get Language of the Application : Local or chosen one by user in the application
     private void configureLanguage(){
         language = SharedPreferencesUtility.getString(this,TAG_LANGUAGE);
         if (language != null){
@@ -181,6 +194,7 @@ public class AuthActivity extends AppCompatActivity {
                 RC_SIGN_IN);
     }
 
+    // Check Authentification provider : Google or Facebook
     private String checkProviderLogged(){
         if (isCurrentUserLogged()){
             if (FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getProviderId().equals("google.com")){
@@ -194,6 +208,12 @@ public class AuthActivity extends AppCompatActivity {
     // --------------------
     // UTILS
     // --------------------
+
+    // Intent to begin MainActivity
+    private void startMainActivity() {
+        Intent login = new Intent(this, MainActivity.class);
+        startActivity(login);
+    }
 
     @Nullable
     protected FirebaseUser getCurrentUser(){
@@ -246,20 +266,55 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     // --------------------
+    // PERMISSIONS
+    // --------------------
+
+    private void enableLocation(){
+        EasyPermissions.requestPermissions(
+                new PermissionRequest.Builder(this, LOCATION_PERMISSION_REQUEST_CODE, PERMS)
+                        .setRationale(R.string.popup_title_permission_location_access)
+                        .setPositiveButtonText(R.string.popup_message_answer_yes)
+                        .setNegativeButtonText(R.string.popup_message_answer_no)
+                        .build());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        startMainActivity();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    // --------------------
     // REST REQUEST
     // --------------------
 
-    // 1 - Http request that create user in firestore
     private void createUserInFirestore(){
+        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User currentUser = documentSnapshot.toObject(User.class);
 
-        if (this.getCurrentUser() != null){
+                if (currentUser == null){
+                    String urlPicture = (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null;
+                    String username = getCurrentUser().getDisplayName();
+                    String uid = getCurrentUser().getUid();
 
-            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-            String username = this.getCurrentUser().getDisplayName();
-            String uid = this.getCurrentUser().getUid();
+                    UserHelper.createUser(uid, username, urlPicture, "XXX", "XX-XX-XXXX", null).addOnFailureListener(onFailureListener());
+                } else {
 
-            UserHelper.createUser(uid, username, urlPicture, null, null, null).addOnFailureListener(this.onFailureListener());
-        }
+                }
+            }
+        });
     }
 
     // --------------------
@@ -274,4 +329,6 @@ public class AuthActivity extends AppCompatActivity {
             }
         };
     }
+
+
 }
