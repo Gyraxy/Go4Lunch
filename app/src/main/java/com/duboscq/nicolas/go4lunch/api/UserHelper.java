@@ -62,8 +62,4 @@ public class UserHelper {
     public static Task<Void> deleteUser(String uid) {
         return UserHelper.getUsersCollection().document(uid).delete();
     }
-
-    public static Task<Void> deleteUserInRestaurantList(String restaurant_uid, String users_date, String user_uid) {
-        return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection(users_date).document(user_uid).delete();
-    }
 }

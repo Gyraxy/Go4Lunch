@@ -1,6 +1,7 @@
 package com.duboscq.nicolas.go4lunch.views;
 
 import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -11,12 +12,18 @@ import com.bumptech.glide.RequestManager;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
+import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,25 +96,27 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         return df.format(distance);
     }
 
-    private void showRestaurantRating(String restaurant_id){
+    private void showRestaurantRating(String restaurant_id) {
         RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                if (restaurant != null){
+                if (restaurant != null) {
                     int nb_likes = restaurant.getLikes();
-                    if (1 < nb_likes && nb_likes<6){
-                        restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                    if (nb_likes == 0) {
+                        restaurant_one_star_imv.setVisibility(View.INVISIBLE);
                         restaurant_two_star_imv.setVisibility(View.INVISIBLE);
                         restaurant_three_star_imv.setVisibility(View.INVISIBLE);
-                    } else if (5 < nb_likes && nb_likes<10){
-                        restaurant_one_star_imv.setVisibility(View.VISIBLE);
-                        restaurant_two_star_imv.setVisibility(View.VISIBLE);
+                    }
+                    if (nb_likes >= 1 && nb_likes <= 5) {
+                        restaurant_two_star_imv.setVisibility(View.INVISIBLE);
                         restaurant_three_star_imv.setVisibility(View.INVISIBLE);
-                    } else if (10 < nb_likes) {
-                        restaurant_one_star_imv.setVisibility(View.VISIBLE);
-                        restaurant_two_star_imv.setVisibility(View.VISIBLE);
-                        restaurant_three_star_imv.setVisibility(View.VISIBLE);
+                    }
+                    if (nb_likes > 5 && nb_likes <= 10) {
+                        restaurant_three_star_imv.setVisibility(View.INVISIBLE);
+                    }
+                    if (nb_likes > 10) {
+
                     }
                 } else {
                     restaurant_one_star_imv.setVisibility(View.INVISIBLE);

@@ -19,7 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
 
     private ImageView workmates_profile_imv;
-    private TextView workmates_answer_txt;
+    final private TextView workmates_answer_txt;
     private String answer;
 
     public WorkmatesViewHolder(View itemView) {
@@ -53,11 +53,20 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void updateRestaurantChosenWorkmatesInfo(User user, RequestManager glide, String workmates_joining) {
+    public void updateRestaurantChosenWorkmatesInfo(User user, RequestManager glide, final String workmates_joining) {
 
         //Upload the image into ImageView
         glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(workmates_profile_imv);
 
-        workmates_answer_txt.setText(workmates_joining);
+        UserHelper.getUser(user.getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User workmates = documentSnapshot.toObject(User.class);
+                String workmates_username = workmates.getUsername();
+                String answer = workmates_username + workmates_joining;
+                workmates_answer_txt.setText(answer);
+            }
+        });
+
     }
 }

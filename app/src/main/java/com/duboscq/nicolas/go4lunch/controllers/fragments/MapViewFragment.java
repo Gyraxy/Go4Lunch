@@ -1,6 +1,7 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
 import android.Manifest;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -19,8 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.controllers.activities.ChatActivity;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -40,6 +43,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
@@ -59,9 +64,11 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     FusedLocationProviderClient mFusedLocationClient;
     LatLng myLatLng;
     Location mLastLocation;
-    String my_location;
-    List<Result> restaurant_list;
+    String my_location, updated_location;
+    List<Result> restaurant_list, updated_restaurant_list;
     RestaurantViewModel mModel;
+    private Disposable disposable;
+    String key, NETWORK = "NETWORK";
 
 
     public MapViewFragment() {
@@ -72,6 +79,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         super.onCreate(savedInstanceState);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         restaurant_list = new ArrayList<>();
+        key = getString(R.string.api_google_place_key);
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
         mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
@@ -154,6 +162,8 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                         mLastLocation = location;
                         myLatLng = new LatLng(mLastLocation.getLatitude(),
                                 mLastLocation.getLongitude());
+                        updated_location = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
+                        //loadNewRestaurantList(updated_location);
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
                     }
                 }
@@ -203,5 +213,28 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     @Override
     public boolean onMarkerClick(Marker marker) {
         return false;
+    }
+
+    private void loadNewRestaurantList(String location) {
+        disposable = APIStreams.getRestaurantList(20,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
+            @Override
+            public void onNext(RestaurantPlace restaurantPlace) {
+                Log.i(NETWORK, "MapViewFragment Updated List: On Next");
+                updated_restaurant_list = new ArrayList<>();
+                updated_restaurant_list.addAll(restaurantPlace.getResults());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i(NETWORK, "MapViewFragment Updated List: On Error" + Log.getStackTraceString(e));
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(NETWORK, "MapViewFragment Updated List: On Complete !!");
+                mModel.setNewRestaurantResult(updated_restaurant_list);
+                mModel.getRestaurantResult();
+            }
+        });
     }
 }

@@ -34,6 +34,12 @@ public class RestaurantViewModel extends ViewModel {
         return restaurant_result;
     }
 
+    public LiveData<List<Result>> setNewRestaurantResult(List<Result> new_result) {
+        restaurant_result = new MutableLiveData<>();
+        restaurant_result.postValue(new_result);
+        return restaurant_result;
+    }
+
     private void loadRestaurantResult() {
         disposable = APIStreams.getRestaurantList(20,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
             @Override

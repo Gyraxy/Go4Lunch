@@ -95,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         createModelViewAndInitFragment();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateProfileData();
+    }
+
     // -------------
     // CONFIGURATION
     // -------------
@@ -190,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     case R.id.bottom_nav_map:
                         toolbar.setTitle(R.string.toolbar_title_hungry);
                         fragmentManager.beginTransaction().show(mapViewFragment).hide(restaurantFragment).hide(workmatesFragment).commit();
-                        mapViewFragment.centerMyLocation();
                         return true;
                     case R.id.bottom_nav_list_view:
                         toolbar.setTitle(R.string.toolbar_title_hungry);

@@ -93,6 +93,7 @@
     <string name="restaurant_already_chosen">"You already choose this restaurant."</string>
     <string name="restaurant_chosen">"You have chosen this restaurant as your lunch."</string>
     <string name="workmate_joining">" is joining."</string>
+    <string name="diag_like">"You already like this restaurant. Do you want to delete the like ?"</string>
 
     <!-- PERMISSION -->
     <string name="popup_title_permission_phone_access">This application needs your permission to access to your phone to work properly.</string>
