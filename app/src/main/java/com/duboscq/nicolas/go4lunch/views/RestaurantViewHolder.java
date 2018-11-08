@@ -31,26 +31,37 @@ import butterknife.ButterKnife;
 public class RestaurantViewHolder extends RecyclerView.ViewHolder {
 
     //FOR DESIGN
-    @BindView(R.id.restaurant_list_name_txt) TextView restaurant_name_txt;
-    @BindView(R.id.restaurant_list_adress_txt) TextView restaurant_address_txt;
-    @BindView(R.id.restaurant_list_people_txt) TextView restaurant_people_chosen_txt;
-    @BindView(R.id.restaurant_list_distance_txt) TextView restaurant_distance_txt;
-    @BindView(R.id.restaurant_list_opening_txt) TextView restaurant_openingTimes_txt;
-    @BindView(R.id.restaurant_list_photo_imv) ImageView restaurant_picture_imv;
-    @BindView(R.id.restaurant_list_one_star_imv) ImageView restaurant_one_star_imv;
-    @BindView(R.id.restaurant_list_two_star_imv) ImageView restaurant_two_star_imv;
-    @BindView(R.id.restaurant_list_three_star_imv) ImageView restaurant_three_star_imv;
+    @BindView(R.id.restaurant_list_name_txt)
+    TextView restaurant_name_txt;
+    @BindView(R.id.restaurant_list_adress_txt)
+    TextView restaurant_address_txt;
+    @BindView(R.id.restaurant_list_people_txt)
+    TextView restaurant_people_chosen_txt;
+    @BindView(R.id.restaurant_list_distance_txt)
+    TextView restaurant_distance_txt;
+    @BindView(R.id.restaurant_list_opening_txt)
+    TextView restaurant_openingTimes_txt;
+    @BindView(R.id.restaurant_list_photo_imv)
+    ImageView restaurant_picture_imv;
+    @BindView(R.id.restaurant_list_one_star_imv)
+    ImageView restaurant_one_star_imv;
+    @BindView(R.id.restaurant_list_two_star_imv)
+    ImageView restaurant_two_star_imv;
+    @BindView(R.id.restaurant_list_three_star_imv)
+    ImageView restaurant_three_star_imv;
+
+    // FOR DATA
+    int nb_wormates_joining, nb_like;
 
     public RestaurantViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }
 
-    public void updateRestaurantInfo(Result restaurantPlaceResult,double latB,double lngB,RequestManager glide,int nb_workmates_joining) {
+    public void updateRestaurantInfo(Result restaurantPlaceResult, double latB, double lngB, RequestManager glide, String todayDate) {
         restaurant_name_txt.setText(restaurantPlaceResult.getName());
         restaurant_address_txt.setText(restaurantPlaceResult.getVicinity());
-        restaurant_people_chosen_txt.setText("("+nb_workmates_joining+")");
-
+        getNumberOfWorkmatesJoining(restaurantPlaceResult,todayDate);
         try {
             boolean isOpenNow = restaurantPlaceResult.getOpeningHours().getOpenNow();
             if (isOpenNow) {
@@ -62,16 +73,14 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
             restaurant_openingTimes_txt.setText(R.string.restaurant_no_opening_info);
         }
         if (restaurantPlaceResult.getPhotos() != null) {
-            if (restaurantPlaceResult.getPhotos().get(0).getPhotoReference() != null){
-                String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
-                        restaurantPlaceResult.getPhotos().get(0).getPhotoReference()+
+            if (restaurantPlaceResult.getPhotos().get(0).getPhotoReference() != null) {
+                String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" +
+                        restaurantPlaceResult.getPhotos().get(0).getPhotoReference() +
                         "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
                 glide.load(restaurantPictureUrl).into(restaurant_picture_imv);
             }
         } else glide.load(R.drawable.no_camera).into(restaurant_picture_imv);
 
-
-        //FOR DATA
         Location restaurant_location = new Location("point A");
         restaurant_location.setLatitude(restaurantPlaceResult.getGeometry().getLocation().getLat());
         restaurant_location.setLongitude(restaurantPlaceResult.getGeometry().getLocation().getLng());
@@ -90,39 +99,48 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         showRestaurantRating(restaurantPlaceResult.getPlaceId());
     }
 
-    private String formatDistance(double distance){
+    private String formatDistance(double distance) {
         DecimalFormat df = new DecimalFormat("0.0");
         df.setRoundingMode(RoundingMode.HALF_UP);
         return df.format(distance);
     }
 
     private void showRestaurantRating(String restaurant_id) {
-        RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        RestaurantHelper.getRestaurantLike(restaurant_id).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                if (restaurant != null) {
-                    int nb_likes = restaurant.getLikes();
-                    if (nb_likes == 0) {
-                        restaurant_one_star_imv.setVisibility(View.INVISIBLE);
-                        restaurant_two_star_imv.setVisibility(View.INVISIBLE);
-                        restaurant_three_star_imv.setVisibility(View.INVISIBLE);
-                    }
-                    if (nb_likes >= 1 && nb_likes <= 5) {
-                        restaurant_two_star_imv.setVisibility(View.INVISIBLE);
-                        restaurant_three_star_imv.setVisibility(View.INVISIBLE);
-                    }
-                    if (nb_likes > 5 && nb_likes <= 10) {
-                        restaurant_three_star_imv.setVisibility(View.INVISIBLE);
-                    }
-                    if (nb_likes > 10) {
-
-                    }
-                } else {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                nb_like = task.getResult().size();
+                if (nb_like == 0) {
                     restaurant_one_star_imv.setVisibility(View.INVISIBLE);
                     restaurant_two_star_imv.setVisibility(View.INVISIBLE);
                     restaurant_three_star_imv.setVisibility(View.INVISIBLE);
                 }
+                if (nb_like >= 1 && nb_like <= 5) {
+                    restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                    restaurant_two_star_imv.setVisibility(View.INVISIBLE);
+                    restaurant_three_star_imv.setVisibility(View.INVISIBLE);
+                }
+                if (nb_like > 5 && nb_like <= 10) {
+                    restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                    restaurant_two_star_imv.setVisibility(View.VISIBLE);
+                    restaurant_three_star_imv.setVisibility(View.INVISIBLE);
+                }
+                if (nb_like > 10) {
+                    restaurant_one_star_imv.setVisibility(View.VISIBLE);
+                    restaurant_two_star_imv.setVisibility(View.VISIBLE);
+                    restaurant_three_star_imv.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private void getNumberOfWorkmatesJoining(Result restaurantPlaceResult, String todayDate) {
+        RestaurantHelper.getWorkmatesJoining(restaurantPlaceResult.getPlaceId(),todayDate).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+               nb_wormates_joining = task.getResult().size();
+               String nb_wormates_joining_txt = "(" + nb_wormates_joining + ")";
+               restaurant_people_chosen_txt.setText(nb_wormates_joining_txt);
             }
         });
     }

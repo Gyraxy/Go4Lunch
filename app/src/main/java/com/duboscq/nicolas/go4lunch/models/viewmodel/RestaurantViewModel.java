@@ -35,8 +35,7 @@ public class RestaurantViewModel extends ViewModel {
     }
 
     public LiveData<List<Result>> setNewRestaurantResult(List<Result> new_result) {
-        restaurant_result = new MutableLiveData<>();
-        restaurant_result.postValue(new_result);
+        restaurant_result.setValue(new_result);
         return restaurant_result;
     }
 

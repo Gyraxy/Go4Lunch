@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,7 +24,11 @@ import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.utils.DividerItemDecoration;
 import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,13 +37,15 @@ public class RestaurantFragment extends Fragment {
 
     //FOR DESIGN
     @BindView(R.id.fragment_restaurant_recycler_view) RecyclerView restaurant_recyclerView;
+    @BindView(R.id.fragment_restaurant_swipe_container) SwipeRefreshLayout restaurant_swipe_refresh ;
 
     //FOR DATA
     RestaurantListRecyclerViewAdapter adapter;
     RestaurantViewModel mModel;
     List<Result> restaurant_list;
-    double user_lat,user_lng;
+    public static double user_lat,user_lng;
     final static String ARG_LAT = "ARG_LAT",ARG_LNG = "ARG_LNG";
+    String todayDate;
 
     public static RestaurantFragment newInstance(double user_lat, double user_lng) {
         RestaurantFragment fragment = new RestaurantFragment();
@@ -62,6 +69,7 @@ public class RestaurantFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
         ButterKnife.bind(this, view);
+        todayDate = getDateTime();
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
         mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
@@ -70,6 +78,7 @@ public class RestaurantFragment extends Fragment {
                     restaurant_list = mModel.getRestaurantResult().getValue();
                     configureRecyclerView();
                     configureOnClickRecyclerView();
+                    configureSwipeRefreshLayout();
                 }
             }
         });
@@ -82,13 +91,22 @@ public class RestaurantFragment extends Fragment {
 
     }
 
+    // --------------------
+    // UI
+    // --------------------
+
+    // RECYCLERVIEW CONFIGURATION
+
     private void configureRecyclerView() {
-        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),0);
+        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),todayDate);
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(restaurant_recyclerView.getContext(), R.drawable.horizontal_divider);
         restaurant_recyclerView.addItemDecoration(mDividerItemDecoration);
+        restaurant_swipe_refresh.setRefreshing(false);
     }
+
+    //CLICK ON RECYCLERVIEW ITEM CONFIGURATION
 
     private void configureOnClickRecyclerView() {
         ItemClickSupport.addTo(restaurant_recyclerView, R.layout.fragment_restaurant)
@@ -108,5 +126,22 @@ public class RestaurantFragment extends Fragment {
                         startActivity(i);
                     }
                 });
+    }
+
+    //SWIPE CONFIGURATION
+
+    private void configureSwipeRefreshLayout() {
+        restaurant_swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                configureRecyclerView();
+            }
+        });
+    }
+
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

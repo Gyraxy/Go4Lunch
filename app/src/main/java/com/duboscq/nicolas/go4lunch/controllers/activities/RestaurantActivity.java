@@ -44,6 +44,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -82,6 +83,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     String NETWORK = "NETWORK";
     String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id;
     User modelCurrentUser;
+    int nb_like;
     private static final int REQUEST_PHONE_CALL = 1;
     private static final String PERMS = Manifest.permission.CALL_PHONE;
     RestaurantWorkmatesRecyclerViewAdapter workmatesRecyclerViewAdapter;
@@ -101,14 +103,17 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         configureAndShowRestaurantList();
         this.getCurrentUserFromFirestore();
         showPictureRestaurant();
-        showRestaurantRating();
+        showRestaurantRating(restaurant_id);
         configureRecyclerView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i("APP", "RestauActivity : Resume");
     }
+
+
 
     @Override
     protected void onDestroy(){
@@ -146,17 +151,30 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 final User user_like = documentSnapshot.toObject(User.class);
                 if (user_like == null){
-                    RestaurantHelper.addUserLiketoRestaurant(restaurant_id,getCurrentUser().getUid());
-                    userAddLikeRestaurant(1);
-                    Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_like_action),Toast.LENGTH_SHORT).show();
+                    RestaurantHelper.addUserLiketoRestaurant(restaurant_id,getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                showRestaurantRating(restaurant_id);
+                                Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_like_action),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                 } else {
                     AlertDialog.Builder like_diag = new AlertDialog.Builder(RestaurantActivity.this);
                     like_diag.setMessage(getString(R.string.diag_like))
                             .setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    RestaurantHelper.deleteUserLikeInRestaurantList(restaurant_id,getCurrentUser().getUid());
-                                    userAddLikeRestaurant(-1);
+                                    RestaurantHelper.deleteUserLikeInRestaurantList(restaurant_id,getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()){
+                                                showRestaurantRating(restaurant_id);
+                                            }
+                                        }
+                                    });
+
                                 }
                             })
                             .setNegativeButton(getString(R.string.dialog_btn_no), new DialogInterface.OnClickListener() {
@@ -225,7 +243,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     public void showPictureRestaurant(){
         if (restaurant_image_url != null){
             Glide.with(this).load(restaurant_image_url).into(restaurant_picture_imv);
-        }
+        } else Glide.with(this).load(R.drawable.no_camera).into(restaurant_picture_imv);
     }
 
     public void disableButtonClick(){
@@ -233,33 +251,31 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         restaurant_website_btn.setClickable(false);
     }
 
-    public void showRestaurantRating(){
-        Log.i("APP","Restaurant Rating");
-        RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    private void showRestaurantRating(String restaurant_id) {
+        Log.i("APP","Show Rating Restaurant");
+        RestaurantHelper.getRestaurantLike(restaurant_id).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                if (restaurant != null){
-                    int nb_likes = restaurant.getLikes();
-                    if (nb_likes == 0) {
-                        one_star_imv.setVisibility(View.INVISIBLE);
-                        two_star_imv.setVisibility(View.INVISIBLE);
-                        three_star_imv.setVisibility(View.INVISIBLE);
-                    }
-                    if (nb_likes >= 1 && nb_likes <= 5) {
-                        two_star_imv.setVisibility(View.INVISIBLE);
-                        three_star_imv.setVisibility(View.INVISIBLE);
-                    }
-                    if (nb_likes > 5 && nb_likes <= 10) {
-                        three_star_imv.setVisibility(View.INVISIBLE);
-                    }
-                    if (nb_likes > 10) {
-
-                    }
-                } else {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                nb_like = task.getResult().size();
+                if (nb_like == 0) {
                     one_star_imv.setVisibility(View.INVISIBLE);
                     two_star_imv.setVisibility(View.INVISIBLE);
                     three_star_imv.setVisibility(View.INVISIBLE);
+                }
+                if (nb_like >= 1 && nb_like <= 5) {
+                    one_star_imv.setVisibility(View.VISIBLE);
+                    two_star_imv.setVisibility(View.INVISIBLE);
+                    three_star_imv.setVisibility(View.INVISIBLE);
+                }
+                if (nb_like > 5 && nb_like <= 10) {
+                    one_star_imv.setVisibility(View.VISIBLE);
+                    two_star_imv.setVisibility(View.VISIBLE);
+                    three_star_imv.setVisibility(View.INVISIBLE);
+                }
+                if (nb_like > 10) {
+                    one_star_imv.setVisibility(View.VISIBLE);
+                    two_star_imv.setVisibility(View.VISIBLE);
+                    three_star_imv.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -276,19 +292,6 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,todayDate,restaurant_image_url);
         SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
         Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
-    }
-
-    private void userAddLikeRestaurant(final int add_like){
-        RestaurantHelper.getRestaurant(restaurant_id).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                if (restaurant != null){
-                    int likes = restaurant.getLikes();
-                    RestaurantHelper.addLikeRestaurant(restaurant_id,likes + add_like);
-                } else RestaurantHelper.addLikeRestaurant(restaurant_id,add_like);
-            }
-        });
     }
 
     // --------------------
@@ -356,7 +359,6 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // 2 - Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 

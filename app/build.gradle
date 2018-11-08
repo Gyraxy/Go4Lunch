@@ -41,6 +41,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
+    //FIREBASE
+
     implementation 'com.google.firebase:firebase-firestore:15.0.0'
     implementation 'com.google.firebase:firebase-auth:15.1.0'
     implementation 'com.google.firebase:firebase-database:15.0.0'

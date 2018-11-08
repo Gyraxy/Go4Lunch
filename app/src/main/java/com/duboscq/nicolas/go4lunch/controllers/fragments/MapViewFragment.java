@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
@@ -32,12 +33,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -49,8 +52,7 @@ import io.reactivex.observers.DisposableObserver;
 public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnMyLocationClickListener,
         OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback,
-        GoogleMap.OnMarkerClickListener {
+        ActivityCompat.OnRequestPermissionsResultCallback{
 
     //FOR DESIGN
     @BindView(R.id.fragment_map_view_my_location_floating_btn)
@@ -64,11 +66,13 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     FusedLocationProviderClient mFusedLocationClient;
     LatLng myLatLng;
     Location mLastLocation;
-    String my_location, updated_location;
+    String my_location, updated_location, restaurantPictureUrl;
     List<Result> restaurant_list, updated_restaurant_list;
     RestaurantViewModel mModel;
     private Disposable disposable;
     String key, NETWORK = "NETWORK";
+    private HashMap<Marker, String> mHashMapId = new HashMap<>();
+    private HashMap<Marker, String> mHashMapPhoto = new HashMap<>();
 
 
     public MapViewFragment() {
@@ -85,7 +89,8 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             @Override
             public void onChanged(@Nullable List<Result> results) {
                 if (results != null){
-                    generateMarkersOnMap(results);
+                    restaurant_list = mModel.getRestaurantResult().getValue();
+                    generateMarkersOnMap();
                     onClickMarker();
                 }
             }
@@ -143,15 +148,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         }
     }
 
-    @Override
-    public boolean onMyLocationButtonClick() {
-        return false;
-    }
-
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-    }
-
     public void centerMyLocation(){
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -163,7 +159,9 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                         myLatLng = new LatLng(mLastLocation.getLatitude(),
                                 mLastLocation.getLongitude());
                         updated_location = mLastLocation.getLatitude() + "," + mLastLocation.getLongitude();
-                        //loadNewRestaurantList(updated_location);
+                        RestaurantFragment.user_lng = mLastLocation.getLongitude();
+                        RestaurantFragment.user_lat = mLastLocation.getLatitude();
+                        loadNewRestaurantList(updated_location);
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 17));
                     }
                 }
@@ -171,16 +169,32 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         }
     }
 
-    private void generateMarkersOnMap(List<Result> restaurant_result){
-        if (restaurant_result != null){
-            for (int i = 0; i<restaurant_result.size();i++) {
-                Double lat = restaurant_result.get(i).getGeometry().getLocation().getLat();
-                Double lng = restaurant_result.get(i).getGeometry().getLocation().getLng();
-                LatLng restaurant = new LatLng(lat, lng);
-                String restaurant_name = restaurant_result.get(i).getName();
-                mMap.addMarker(new MarkerOptions()
-                        .position(restaurant)
-                        .title(restaurant_name));
+    private void generateMarkersOnMap(){
+        if (restaurant_list != null){
+            mMap.clear();
+            for (int i = 0; i<restaurant_list.size();i++) {
+                Double lat = restaurant_list.get(i).getGeometry().getLocation().getLat();
+                Double lng = restaurant_list.get(i).getGeometry().getLocation().getLng();
+                LatLng restaurant_position = new LatLng(lat, lng);
+                String restaurant_name = restaurant_list.get(i).getName();
+
+                if (restaurant_list.get(i).getPhotos() != null) {
+                    if (restaurant_list.get(i).getPhotos().get(0).getPhotoReference() != null){
+                        restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
+                                restaurant_list.get(i).getPhotos().get(0).getPhotoReference()+
+                                "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
+                    }
+                } else restaurantPictureUrl = null;
+
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(restaurant_position);
+                markerOptions.title(restaurant_name);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+                Marker m = mMap.addMarker(markerOptions);
+
+                mHashMapId.put(m, restaurant_list.get(i).getPlaceId());
+                mHashMapPhoto.put(m, restaurantPictureUrl);
             }
         }
     }
@@ -189,30 +203,18 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                for (int i = 0; i<restaurant_list.size();i++){
-                    if (marker.getTitle().equals(restaurant_list.get(i).getName())){
-                        Log.i("APP","Click Marker");
-                        Intent go_restaurant = new Intent(getContext(),RestaurantActivity.class);
-                        go_restaurant.putExtra("restaurant_id",restaurant_list.get(i).getPlaceId());
-                        if (restaurant_list.get(i).getPhotos() != null) {
-                            if (restaurant_list.get(i).getPhotos().get(0).getPhotoReference() != null){
-                                String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
-                                        restaurant_list.get(i).getPhotos().get(0).getPhotoReference()+
-                                        "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
-                                go_restaurant.putExtra("restaurant_image_url",restaurantPictureUrl);
-                            }
-                        }
-                        startActivity(go_restaurant);
-                    }
-                }
+
+                String restaurant_placeId = mHashMapId.get(marker);
+                String restaurant_url = mHashMapPhoto.get(marker);
+
+                Intent startRestaurantActivity = new Intent(getContext(), RestaurantActivity.class);
+                startRestaurantActivity.putExtra("restaurant_id", restaurant_placeId);
+                startRestaurantActivity.putExtra("restaurant_image_url",restaurant_url);
+                startActivity(startRestaurantActivity);
+
                 return false;
             }
         });
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return false;
     }
 
     private void loadNewRestaurantList(String location) {
@@ -233,8 +235,20 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             public void onComplete() {
                 Log.i(NETWORK, "MapViewFragment Updated List: On Complete !!");
                 mModel.setNewRestaurantResult(updated_restaurant_list);
-                mModel.getRestaurantResult();
             }
         });
+    }
+
+    // ------------------------------
+    // AUTO GENERATED METHOD NOT USED
+    // ------------------------------
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
     }
 }

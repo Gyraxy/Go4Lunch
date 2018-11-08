@@ -19,14 +19,14 @@ public class RestaurantListRecyclerViewAdapter extends RecyclerView.Adapter<Rest
     private List<Result> restaurant_place_result;
     private RequestManager glide;
     private double latB,lngB;
-    private int nb_workmates;
+    private String todayDate;
 
-    public RestaurantListRecyclerViewAdapter(List<Result> result, double latB, double lngB, RequestManager glide, int nb_workmates) {
+    public RestaurantListRecyclerViewAdapter(List<Result> result, double latB, double lngB, RequestManager glide, String todayDate) {
         this.restaurant_place_result = result;
         this.latB = latB;
         this.lngB = lngB;
         this.glide = glide;
-        this.nb_workmates = nb_workmates;
+        this.todayDate = todayDate;
     }
 
     @NonNull
@@ -39,7 +39,7 @@ public class RestaurantListRecyclerViewAdapter extends RecyclerView.Adapter<Rest
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantViewHolder holder, int position) {
-        holder.updateRestaurantInfo(this.restaurant_place_result.get(position),latB,lngB,this.glide,nb_workmates);
+        holder.updateRestaurantInfo(this.restaurant_place_result.get(position),this.latB,this.lngB,this.glide,this.todayDate);
     }
 
     @Override

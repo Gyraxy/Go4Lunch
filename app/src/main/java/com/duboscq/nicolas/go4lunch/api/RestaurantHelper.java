@@ -6,6 +6,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class RestaurantHelper {
 
@@ -23,6 +25,14 @@ public class RestaurantHelper {
 
     public static Task<DocumentSnapshot> getRestaurantUserLikeList(String restaurant_id, String user_id){
         return getRestaurantCollection().document(restaurant_id).collection("like").document(user_id).get();
+    }
+
+    public static Task<QuerySnapshot> getWorkmatesJoining(String restaurant_id, String todayDate){
+        return RestaurantHelper.getRestaurantCollection().document(restaurant_id).collection("users" + todayDate).get();
+    }
+
+    public static Task<QuerySnapshot> getRestaurantLike(String restaurant_id){
+        return RestaurantHelper.getRestaurantCollection().document(restaurant_id).collection("like").get();
     }
 
     // --- CREATE ---

@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         String your_lunch_url = current_user.getLunchUrl();
                         String your_lunch_date = current_user.getLunchDate();
                         if (your_lunch.equals("XXX") || !todayDate.equals(your_lunch_date)){
-                            Toast.makeText(MainActivity.this,"You did not choose your lunch yet.",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this,getString(R.string.no_lunch_chosen),Toast.LENGTH_SHORT).show();
                         } else if (todayDate.equals(your_lunch_date) && !your_lunch.equals("XXX")){
                             Intent i_lunch = new Intent(MainActivity.this,RestaurantActivity.class);
                             i_lunch.putExtra("restaurant_id",your_lunch);

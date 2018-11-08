@@ -10,9 +10,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,6 +36,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 public class SettingProfileActivity extends AppCompatActivity {
@@ -164,6 +164,15 @@ public class SettingProfileActivity extends AppCompatActivity {
     public void updateUsername(){
         this.updateUsernameInFirebase();
         Toast.makeText(this,getString(R.string.username_updated),Toast.LENGTH_SHORT).show();
+    }
+
+    @OnCheckedChanged(R.id.activity_setting_switch)
+    public void switchNotificationChanged(CompoundButton button, boolean checked){
+        if (checked){
+
+        } else if (!checked){
+
+        }
     }
 
     //--------------
