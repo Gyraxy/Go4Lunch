@@ -21,6 +21,7 @@ import com.duboscq.nicolas.go4lunch.adapters.RestaurantListRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.duboscq.nicolas.go4lunch.utils.DividerItemDecoration;
 import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
 
@@ -69,7 +70,7 @@ public class RestaurantFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
         ButterKnife.bind(this, view);
-        todayDate = getDateTime();
+        todayDate = DateUtility.getDateTime();
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
         mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
@@ -137,11 +138,5 @@ public class RestaurantFragment extends Fragment {
                 configureRecyclerView();
             }
         });
-    }
-
-    private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
-        Date date = new Date();
-        return dateFormat.format(date);
     }
 }

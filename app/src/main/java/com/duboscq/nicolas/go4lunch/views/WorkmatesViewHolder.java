@@ -28,7 +28,7 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
         workmates_answer_txt = itemView.findViewById(R.id.workmates_answer_txt);
     }
 
-    public void updateWorkmatesInfo(User user, RequestManager glide, final Context context) {
+    public void updateWorkmatesInfo(User user, RequestManager glide, final Context context,final String todayDate) {
 
         //Upload the image into ImageView
         glide.load(user.getUrlPicture()).apply(RequestOptions.circleCropTransform()).into(workmates_profile_imv);
@@ -39,12 +39,12 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User workmates = documentSnapshot.toObject(User.class);
-                String workmates_lunch = workmates.getLunch();
-                if (workmates_lunch.equals("XXX")){
+                String workmates_lunch_date = workmates.getLunchDate();
+                if (!workmates_lunch_date.equals(todayDate)){
                     answer = workmate_name + context.getString(R.string.workmates_not_decided);
                     workmates_answer_txt.setText(answer);
                     workmates_answer_txt.setTypeface(null, Typeface.ITALIC);
-                } else if (!workmates_lunch.equals("XXX")){
+                } else if (workmates_lunch_date.equals(todayDate)){
                     answer = workmate_name + context.getString(R.string.workmates_is_eating);
                     workmates_answer_txt.setText(answer);
                     workmates_answer_txt.setTypeface(null, Typeface.NORMAL);

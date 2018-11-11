@@ -75,6 +75,8 @@
     <string name="dialog_message">"Changing language require application reboot. Are you sure you want to change language ?"</string>
     <string name="dialog_btn_yes">"YES"</string>
     <string name="dialog_btn_no">"NO"</string>
+    <string name="notification_on">Notification scheduled.</string>
+    <string name="notification_canceled">Notification cancelled.</string>
 
 
     <!-- CHAT ACTIVITY-->

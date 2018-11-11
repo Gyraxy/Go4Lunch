@@ -18,11 +18,17 @@ import com.duboscq.nicolas.go4lunch.adapters.WorkmatesRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.Query;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +41,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
 
     // FOR DATA
     WorkmatesRecyclerViewAdapter workmatesRecyclerViewAdapter;
+    String todayDate;
 
     public WorkmatesFragment() { }
 
@@ -46,6 +53,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_workmates, container, false);
+        todayDate = DateUtility.getDateTime();
         ButterKnife.bind(this, view);
         configureRecyclerView();
         return view;
@@ -65,7 +73,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     //RECYCLERVIEW CONFIGURATION
     private void configureRecyclerView(){
 
-        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, this.getCurrentUser().getUid(),getContext());
+        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, this.getCurrentUser().getUid(),getContext(), todayDate);
         workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {

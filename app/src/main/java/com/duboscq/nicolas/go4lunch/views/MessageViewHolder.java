@@ -14,6 +14,7 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.models.firebase.Message;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -67,7 +68,7 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         this.textViewMessage.setTextAlignment(isCurrentUser ? View.TEXT_ALIGNMENT_TEXT_END : View.TEXT_ALIGNMENT_TEXT_START);
 
         // Update date TextView
-        if (message.getDateCreated() != null) this.textViewDate.setText(this.convertDateToHour(message.getDateCreated()));
+        if (message.getDateCreated() != null) this.textViewDate.setText(DateUtility.convertDateToHour(message.getDateCreated()));
 
 
         // Update profile picture ImageView
@@ -110,12 +111,5 @@ public class MessageViewHolder extends RecyclerView.ViewHolder {
         this.cardViewImageSent.setLayoutParams(paramsImageView);
 
         this.rootView.requestLayout();
-    }
-
-    // ---
-
-    private String convertDateToHour(Date date){
-        DateFormat dfTime = new SimpleDateFormat("dd/MM-HH:mm");
-        return dfTime.format(date);
     }
 }

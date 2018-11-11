@@ -35,6 +35,7 @@ import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -98,7 +99,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         restaurant_id = getIntent().getExtras().getString("restaurant_id",null);
         restaurant_image_url = getIntent().getExtras().getString("restaurant_image_url",null);
         last_restaurant_chosen_id = SharedPreferencesUtility.getString(this,"LAST_RESTAURANT_CHOSEN");
-        todayDate = getDateTime();
+        todayDate = DateUtility.getDateTime();
         checkRestaurantchosen();
         configureAndShowRestaurantList();
         this.getCurrentUserFromFirestore();
@@ -349,12 +350,6 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-    private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

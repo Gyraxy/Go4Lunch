@@ -34,7 +34,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //GLIDE
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 
     //BUTTERKNIFE
@@ -43,26 +43,23 @@ dependencies {
 
     //FIREBASE
 
-    implementation 'com.google.firebase:firebase-firestore:15.0.0'
-    implementation 'com.google.firebase:firebase-auth:15.1.0'
-    implementation 'com.google.firebase:firebase-database:15.0.0'
-    implementation 'com.google.firebase:firebase-storage:15.0.2'
-
-    implementation 'com.firebaseui:firebase-ui-firestore:3.3.1'
-    implementation 'com.firebaseui:firebase-ui-database:3.3.1'
-    implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
-    implementation 'com.firebaseui:firebase-ui-storage:3.3.1'
+    implementation 'com.google.firebase:firebase-core:16.0.5' // For FireBase Integration
+    implementation 'com.firebaseui:firebase-ui-database:4.2.1' // FirebaseUI for Firebase Realtime Database
+    implementation 'com.firebaseui:firebase-ui-firestore:4.2.1' // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-auth:4.2.1' // FirebaseUI for Firebase Auth
+    implementation 'com.firebaseui:firebase-ui-storage:4.2.1' // FirebaseUI for Cloud Storage
+    implementation 'com.google.firebase:firebase-messaging:17.3.4' // For FireBase Cloud Messaging
 
     // FACEBOOK LOGIN SUPPORT
-    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+    implementation 'com.facebook.android:facebook-android-sdk:4.38.1'
 
     //EASY PERMISSIONS
     implementation 'pub.devrel:easypermissions:1.1.1'
 
     //GOOGLE MAP & PLACE
-    implementation 'com.google.android.gms:play-services-maps:15.0.1'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
-    implementation 'com.google.android.gms:play-services-places:15.0.1'
+    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.android.gms:play-services-places:16.0.0'
 
     //GSON
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'

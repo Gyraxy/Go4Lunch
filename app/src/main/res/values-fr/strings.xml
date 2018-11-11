@@ -72,10 +72,12 @@
     <string name="popup_message_answer_yes">Oui !</string>
     <string name="popup_message_answer_no">Non</string>
     <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
-    <string name="username_updated">Votre nom d\'utilisateur a été mis à jour?</string>
+    <string name="username_updated">Votre nom d\'utilisateur a été mis à jour.</string>
     <string name="dialog_message">Changer la langue nécessite de redémarrer l\'application. Etes vous sur de changer la langue ?</string>
     <string name="dialog_btn_yes">OUI</string>
     <string name="dialog_btn_no">NON</string>
+    <string name="notification_on">Notification planifiée.</string>
+    <string name="notification_canceled">Notification annulée.</string>
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">Il n\'y a aucuns messages&#8230;</string>

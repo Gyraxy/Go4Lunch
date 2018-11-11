@@ -16,23 +16,24 @@ public class WorkmatesRecyclerViewAdapter extends FirestoreRecyclerAdapter<User,
 
     //FOR DATA
     private final RequestManager glide;
-    private String idCurrentUser;
+    private String idCurrentUser, todayDate;
     private Context context;
 
     //FOR COMMUNICATION
     private Listener callback;
 
-    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback, String idCurrentUser, Context context) {
+    public WorkmatesRecyclerViewAdapter(@NonNull FirestoreRecyclerOptions<User> options, RequestManager glide, Listener callback, String idCurrentUser, Context context, String todayDate) {
         super(options);
         this.glide = glide;
         this.callback = callback;
         this.idCurrentUser = idCurrentUser;
         this.context = context;
+        this.todayDate = todayDate;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull WorkmatesViewHolder holder, int position, @NonNull User model) {
-        holder.updateWorkmatesInfo(model,this.glide, this.context);
+        holder.updateWorkmatesInfo(model,this.glide, this.context, this.todayDate);
     }
 
     @NonNull

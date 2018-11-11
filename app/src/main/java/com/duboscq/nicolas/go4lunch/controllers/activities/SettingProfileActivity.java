@@ -58,8 +58,8 @@ public class SettingProfileActivity extends AppCompatActivity {
     //FOR DATA
     String radio_language;
     String language;
-    String TAG_LANGUAGE = "TAG_LANGUAGE";
-    String activity;
+    String TAG_LANGUAGE = "TAG_LANGUAGE",NOTIFICATION = "NOTIFICATION";
+    String activity,notification;
 
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
@@ -73,6 +73,7 @@ public class SettingProfileActivity extends AppCompatActivity {
         if (activity.equals("Settings")){
             setSettingLayout();
             getLanguage();
+            getNotificationPreferences();
             configureToolBar();
         } else if (activity.equals("Profile")){
             setProfile_layout();
@@ -169,9 +170,11 @@ public class SettingProfileActivity extends AppCompatActivity {
     @OnCheckedChanged(R.id.activity_setting_switch)
     public void switchNotificationChanged(CompoundButton button, boolean checked){
         if (checked){
-
+            SharedPreferencesUtility.putString(this,NOTIFICATION,"ON");
+            Toast.makeText(this,getString(R.string.notification_on),Toast.LENGTH_SHORT).show();
         } else if (!checked){
-
+            SharedPreferencesUtility.putString(this,NOTIFICATION,"OFF");
+            Toast.makeText(this,getString(R.string.notification_canceled),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -209,6 +212,21 @@ public class SettingProfileActivity extends AppCompatActivity {
                 break;
                 default:
                     break;
+        }
+    }
+
+    private void getNotificationPreferences(){
+        notification = SharedPreferencesUtility.getString(this,NOTIFICATION);
+        switch (notification){
+            case "ON":
+                notification_switch.setChecked(true);
+                break;
+            case "OFF":
+                notification_switch.setChecked(false);
+                break;
+            default:
+                notification_switch.setChecked(false);
+                break;
         }
     }
 

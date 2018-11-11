@@ -142,9 +142,9 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
                 .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        String pathImageSavedInFirebase = taskSnapshot.getMetadata().getDownloadUrl().toString();
+                        //String pathImageSavedInFirebase = taskSnapshot.getMetadata().getDownloadUrl().toString();
                         // B - SAVE MESSAGE IN FIRESTORE
-                        MessageHelper.createMessageWithImageForChat(pathImageSavedInFirebase, message, modelCurrentUser).addOnFailureListener(onFailureListener());
+                        //MessageHelper.createMessageWithImageForChat(pathImageSavedInFirebase, message, modelCurrentUser).addOnFailureListener(onFailureListener());
                     }
                 })
                 .addOnFailureListener(this.onFailureListener());
