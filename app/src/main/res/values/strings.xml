@@ -77,6 +77,7 @@
     <string name="dialog_btn_no">"NO"</string>
     <string name="notification_on">Notification scheduled.</string>
     <string name="notification_canceled">Notification cancelled.</string>
+    <string name="notification_lunch">"Your Lunch : "</string>
 
 
     <!-- CHAT ACTIVITY-->

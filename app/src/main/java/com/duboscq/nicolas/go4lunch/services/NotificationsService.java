@@ -12,22 +12,26 @@ import android.util.Log;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
+import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
+import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
+import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
@@ -35,16 +39,26 @@ public class NotificationsService extends FirebaseMessagingService {
 
     private final int NOTIFICATION_ID = 007;
     private final String NOTIFICATION_TAG = "GO4LUNCH", NETWORK = "NETWORK";
-    String restaurant_adress, restaurant_name, chosenrestaurantId;
+    String restaurant_adress, restaurant_name, chosenrestaurantId, notification, lunch_date;
     private Disposable disposable;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.i("NETWORK","On Message Firebase Notification received");
-        if (remoteMessage.getNotification() != null) {
-            Log.i("NETWORK","Receive notification from Firebase");
-            String message = remoteMessage.getNotification().getBody();
-            getUserRestaurantId();
+        notification = SharedPreferencesUtility.getString(this,"NOTIFICATION");
+        if (remoteMessage.getNotification() != null && notification.equals("ON")) {
+            UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    User current_user = documentSnapshot.toObject(User.class);
+                    lunch_date = current_user.getLunchDate();
+                    if (lunch_date.equals(DateUtility.getDateTime())){
+                        Log.i("NETWORK","Receive notification from Firebase");
+                        getUserRestaurantId();
+                    }
+                }
+            });
+
         }
     }
 
@@ -55,7 +69,7 @@ public class NotificationsService extends FirebaseMessagingService {
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle("Go4Lunch");
-        inboxStyle.addLine("Your Lunch: "+restaurant_name);
+        inboxStyle.addLine(getString(R.string.notification_lunch)+restaurant_name);
         inboxStyle.addLine(restaurant_adress);
 
         String channelId = "my channel";
@@ -83,7 +97,7 @@ public class NotificationsService extends FirebaseMessagingService {
     }
 
     private void getUserRestaurantId() {
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
@@ -113,12 +127,21 @@ public class NotificationsService extends FirebaseMessagingService {
             @Override
             public void onComplete() {
                 Log.i(NETWORK, "Notification : On Complete !!");
-                sendVisualNotification(restaurant_name,restaurant_adress);
+                RestaurantHelper.getWorkmatesJoining(restaurant_id, DateUtility.getDateTime())
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    List<DocumentSnapshot> wormates_joining = task.getResult().getDocuments();
+                                    for (int i = 0; i<wormates_joining.size();i++){
+                                        User curent = wormates_joining.get(i).toObject(User.class);
+                                        Log.i(NETWORK, curent.getUsername());
+                                    }
+                                    sendVisualNotification(restaurant_name, restaurant_adress);
+                                }
+                            }
+                        });
             }
         });
-    }
-
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
     }
 }

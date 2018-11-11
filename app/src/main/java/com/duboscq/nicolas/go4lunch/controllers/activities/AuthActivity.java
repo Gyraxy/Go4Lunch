@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
@@ -196,7 +197,7 @@ public class AuthActivity extends AppCompatActivity implements EasyPermissions.P
 
     // Check Authentification provider : Google or Facebook
     private String checkProviderLogged(){
-        if (isCurrentUserLogged()){
+        if (FirebaseUtils.isCurrentUserLogged()){
             if (FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getProviderId().equals("google.com")){
                 return "google";
             } else if (FirebaseAuth.getInstance().getCurrentUser().getProviderData().get(1).getProviderId().equals("facebook.com")) {
@@ -213,16 +214,6 @@ public class AuthActivity extends AppCompatActivity implements EasyPermissions.P
     private void startMainActivity() {
         Intent login = new Intent(this, MainActivity.class);
         startActivity(login);
-    }
-
-    @Nullable
-    protected FirebaseUser getCurrentUser(){
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged(){
-        return (
-            this.getCurrentUser() != null);
     }
 
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
@@ -299,15 +290,15 @@ public class AuthActivity extends AppCompatActivity implements EasyPermissions.P
     // --------------------
 
     private void createUserInFirestore(){
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User currentUser = documentSnapshot.toObject(User.class);
 
                 if (currentUser == null){
-                    String urlPicture = (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null;
-                    String username = getCurrentUser().getDisplayName();
-                    String uid = getCurrentUser().getUid();
+                    String urlPicture = (FirebaseUtils.getCurrentUser().getPhotoUrl() != null) ? FirebaseUtils.getCurrentUser().getPhotoUrl().toString() : null;
+                    String username = FirebaseUtils.getCurrentUser().getDisplayName();
+                    String uid = FirebaseUtils.getCurrentUser().getUid();
 
                     UserHelper.createUser(uid, username, urlPicture, "XXX", "XX-XX-XXXX", null).addOnFailureListener(onFailureListener());
                 } else {

@@ -36,6 +36,7 @@ import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
+import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.duboscq.nicolas.go4lunch.utils.SharedPreferencesUtility;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -147,12 +148,12 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
 
     @OnClick(R.id.activity_restaurant_like_btn)
     public void onClickLikeRestaurant() {
-        RestaurantHelper.getRestaurantUserLikeList(restaurant_id,getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        RestaurantHelper.getRestaurantUserLikeList(restaurant_id,FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 final User user_like = documentSnapshot.toObject(User.class);
                 if (user_like == null){
-                    RestaurantHelper.addUserLiketoRestaurant(restaurant_id,getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    RestaurantHelper.addUserLiketoRestaurant(restaurant_id,FirebaseUtils.getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
@@ -167,7 +168,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                             .setPositiveButton(getString(R.string.dialog_btn_yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    RestaurantHelper.deleteUserLikeInRestaurantList(restaurant_id,getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    RestaurantHelper.deleteUserLikeInRestaurantList(restaurant_id,FirebaseUtils.getCurrentUser().getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()){
@@ -192,7 +193,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
 
     @OnClick(R.id.activity_restaurant_selection_floating_btn)
     public void chooseRestaurant() {
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
@@ -288,7 +289,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         UserHelper.updateUserLunchDate(user_uid,todayDate);
         restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         if (!restaurant_chosen.equals(null)){
-            RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,getCurrentUser().getUid());
+            RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,FirebaseUtils.getCurrentUser().getUid());
         }
         RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,todayDate,restaurant_image_url);
         SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
@@ -302,7 +303,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     //RECYCLERVIEW CONFIGURATION
     private void configureRecyclerView(){
 
-        this.workmatesRecyclerViewAdapter = new RestaurantWorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllRestaurantWorkmates(restaurant_id,"users"+todayDate)), Glide.with(this), this, this.getCurrentUser().getUid(), getString(R.string.workmate_joining));
+        this.workmatesRecyclerViewAdapter = new RestaurantWorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllRestaurantWorkmates(restaurant_id,"users"+todayDate)), Glide.with(this), this, FirebaseUtils.getCurrentUser().getUid(), getString(R.string.workmate_joining));
         workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -321,7 +322,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     }
 
     private void checkRestaurantchosen(){
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
@@ -348,8 +349,6 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     // UTILS
     // --------------------
 
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -361,7 +360,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     // REST REQUESTS
     // --------------------
     private void getCurrentUserFromFirestore(){
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 modelCurrentUser = documentSnapshot.toObject(User.class);

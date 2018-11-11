@@ -21,6 +21,10 @@ android {
             resValue("string", "api_google_place_key", "AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4")
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -49,7 +53,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.2.1' // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-storage:4.2.1' // FirebaseUI for Cloud Storage
     implementation 'com.google.firebase:firebase-messaging:17.3.4' // For FireBase Cloud Messaging
-
+    
     // FACEBOOK LOGIN SUPPORT
     implementation 'com.facebook.android:facebook-android-sdk:4.38.1'
 

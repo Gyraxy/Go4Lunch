@@ -38,13 +38,17 @@ import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModelFactory;
+import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String NETWORK = "NETWORK";
     TextView profile_name_txt,profile_email_txt;
     MapViewFragment mapViewFragment;
     RestaurantFragment restaurantFragment;
@@ -84,6 +89,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        FirebaseMessaging.getInstance().subscribeToTopic("all")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Notification subscribed";
+                        if (!task.isSuccessful()) {
+                            msg = "Notification subscribed";
+                        }
+                        Log.i(NETWORK,msg);
+                    }
+                });
+
         key = getString(R.string.api_google_place_key);
         todayDate = getDateTime();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -142,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(i_profile);
                 break;
             case R.id.activity_main_your_lunch:
-                UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User current_user = documentSnapshot.toObject(User.class);
@@ -237,15 +254,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         profile_email_txt = nav_header.findViewById(R.id.nav_header_profile_email_txt);
         ImageView profile_imv = nav_header.findViewById(R.id.nav_header_profile_imv);
 
-        if (this.getCurrentUser().getPhotoUrl() != null) {
+        if (FirebaseUtils.getCurrentUser().getPhotoUrl() != null) {
             Glide.with(this)
-                    .load(this.getCurrentUser().getPhotoUrl())
+                    .load(FirebaseUtils.getCurrentUser().getPhotoUrl())
                     .apply(RequestOptions.circleCropTransform())
                     .into(profile_imv);
         }
 
-        if (this.getCurrentUser() != null) {
-            UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        if (FirebaseUtils.getCurrentUser() != null) {
+            UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     User currentUser = documentSnapshot.toObject(User.class);
@@ -253,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     profile_name_txt.setText(username);
                 }
             });
-            String usermail = getCurrentUser().getEmail();
+            String usermail = FirebaseUtils.getCurrentUser().getEmail();
             profile_email_txt.setText(usermail);
         }
     }
@@ -299,9 +316,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         };
     }
-
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
     private String getDateTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);

@@ -1,6 +1,5 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,24 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.WorkmatesRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
-import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
+import com.duboscq.nicolas.go4lunch.utils.DividerItemDecoration;
+import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.duboscq.nicolas.go4lunch.utils.ItemClickSupport;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.Query;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +50,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
         todayDate = DateUtility.getDateTime();
         ButterKnife.bind(this, view);
         configureRecyclerView();
+        configureOnClickRecyclerView();
         return view;
     }
 
@@ -73,18 +68,19 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     //RECYCLERVIEW CONFIGURATION
     private void configureRecyclerView(){
 
-        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, this.getCurrentUser().getUid(),getContext(), todayDate);
+        this.workmatesRecyclerViewAdapter = new WorkmatesRecyclerViewAdapter(generateOptionsForAdapter(UserHelper.getAllWorkmates()), Glide.with(this), this, FirebaseUtils.getCurrentUser().getUid(),getContext(), todayDate);
         workmatesRecyclerViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 recyclerView.smoothScrollToPosition(workmatesRecyclerViewAdapter.getItemCount()); // Scroll to bottom on new messages
             }
         });
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), R.drawable.horizontal_divider);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(mDividerItemDecoration);
         recyclerView.setAdapter(this.workmatesRecyclerViewAdapter);
     }
 
-    // 6 - Create options for RecyclerView from a Query
     private FirestoreRecyclerOptions<User> generateOptionsForAdapter(Query query){
         return new FirestoreRecyclerOptions.Builder<User>()
                 .setQuery(query, User.class)
@@ -97,8 +93,7 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener(){
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        Intent i = new Intent(getActivity(), RestaurantActivity.class);
-                        startActivity(i);
+                        Toast.makeText(getContext(),"Click",Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -111,11 +106,4 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
     public void onDataChanged() {
         textViewRecyclerViewEmpty.setVisibility(this.workmatesRecyclerViewAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
-
-    // --------------------
-    // UTILS
-    // --------------------
-
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 }

@@ -28,7 +28,7 @@ public class RestaurantHelper {
     }
 
     public static Task<QuerySnapshot> getWorkmatesJoining(String restaurant_id, String todayDate){
-        return RestaurantHelper.getRestaurantCollection().document(restaurant_id).collection("users" + todayDate).get();
+        return getRestaurantCollection().document(restaurant_id).collection("users" + todayDate).get();
     }
 
     public static Task<QuerySnapshot> getRestaurantLike(String restaurant_id){

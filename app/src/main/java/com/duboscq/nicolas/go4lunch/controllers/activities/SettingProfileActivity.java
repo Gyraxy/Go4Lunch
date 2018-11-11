@@ -1,6 +1,9 @@
 package com.duboscq.nicolas.go4lunch.controllers.activities;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -32,6 +35,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -217,17 +221,9 @@ public class SettingProfileActivity extends AppCompatActivity {
 
     private void getNotificationPreferences(){
         notification = SharedPreferencesUtility.getString(this,NOTIFICATION);
-        switch (notification){
-            case "ON":
-                notification_switch.setChecked(true);
-                break;
-            case "OFF":
-                notification_switch.setChecked(false);
-                break;
-            default:
-                notification_switch.setChecked(false);
-                break;
-        }
+        if (notification != null && notification.equals("ON")){
+            notification_switch.setChecked(true);
+        } else notification_switch.setChecked(false);
     }
 
     //LAYOUT CONFIGURATION DEPEND IF PROFILE OR SETTING

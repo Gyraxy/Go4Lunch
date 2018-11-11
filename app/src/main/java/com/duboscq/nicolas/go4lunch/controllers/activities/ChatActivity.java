@@ -28,6 +28,7 @@ import com.duboscq.nicolas.go4lunch.api.MessageHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.models.firebase.Message;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -126,7 +127,7 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
     // REST REQUESTS
     // --------------------
     private void getCurrentUserFromFirestore(){
-        UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 modelCurrentUser = documentSnapshot.toObject(User.class);
@@ -155,7 +156,7 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
     // --------------------
     // Configure RecyclerView with a Query
     private void configureRecyclerView(){
-        this.messageChatAdapter = new ChatAdapter(generateOptionsForAdapter(MessageHelper.getMessageQuery()), Glide.with(this), this, this.getCurrentUser().getUid());
+        this.messageChatAdapter = new ChatAdapter(generateOptionsForAdapter(MessageHelper.getMessageQuery()), Glide.with(this), this, FirebaseUtils.getCurrentUser().getUid());
         messageChatAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -185,9 +186,6 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
     // --------------------
     // UTILS
     // --------------------
-
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
