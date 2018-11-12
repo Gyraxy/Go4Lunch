@@ -79,6 +79,8 @@
     <string name="notification_on">Notification scheduled.</string>
     <string name="notification_canceled">Notification cancelled.</string>
     <string name="notification_lunch">"Your Lunch : "</string>
+    <string name="notification_no_workmates">"No workmates are joining you on this restaurant."</string>
+    <string name="notification_workmates_joining">"Workmates coming with you :"</string>
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">There are no messages&#8230;</string>

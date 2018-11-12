@@ -79,6 +79,8 @@
     <string name="notification_on">Notification planifiée.</string>
     <string name="notification_canceled">Notification annulée.</string>
     <string name="notification_lunch">"Votre repas : "</string>
+    <string name="notification_no_workmates">"Aucun collègue ne sera présent à ce restaurant avec vous."</string>
+    <string name="notification_workmates_joining">"Les collègues se joignant à vous :"</string>
 
     <!-- CHAT ACTIVITY-->
     <string name="chat_activity_text_view_chat_error">Il n\'y a aucuns messages&#8230;</string>

@@ -40,8 +40,12 @@ public class NotificationsService extends FirebaseMessagingService {
     private final int NOTIFICATION_ID = 007;
     private final String NOTIFICATION_TAG = "GO4LUNCH", NETWORK = "NETWORK";
     String restaurant_adress, restaurant_name, chosenrestaurantId, notification, lunch_date;
+    String answerWorkmatesJoining;
     private Disposable disposable;
+    List<DocumentSnapshot> wormatesJoining;
 
+
+    // MESSAGE RECEIVED FROM FIREBASE
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.i("NETWORK","On Message Firebase Notification received");
@@ -62,6 +66,7 @@ public class NotificationsService extends FirebaseMessagingService {
         }
     }
 
+    // VISUAL NOTIFICATION CONFIGURATION AND SHOW TO DEVICE
     private void sendVisualNotification(String restaurant_name, String restaurant_adress) {
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -71,6 +76,7 @@ public class NotificationsService extends FirebaseMessagingService {
         inboxStyle.setBigContentTitle("Go4Lunch");
         inboxStyle.addLine(getString(R.string.notification_lunch)+restaurant_name);
         inboxStyle.addLine(restaurant_adress);
+        inboxStyle.addLine(answerWorkmatesJoining);
 
         String channelId = "my channel";
 
@@ -96,6 +102,7 @@ public class NotificationsService extends FirebaseMessagingService {
         notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 
+    // GET USER RESTAURANT ID CHOICE IF THE DATE OF LUNCH IS TODAY
     private void getUserRestaurantId() {
         UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -103,13 +110,12 @@ public class NotificationsService extends FirebaseMessagingService {
 
                 User currentUser = documentSnapshot.toObject(User.class);
                 chosenrestaurantId = currentUser.getLunch();
-                if (!chosenrestaurantId.equals("XXX")){
-                    getRestaurantDetail(chosenrestaurantId);
-                }
+                getRestaurantDetail(chosenrestaurantId);
             }
         });
     }
 
+    // GET RESTAURANT DETAIL
     private void getRestaurantDetail(final String restaurant_id) {
         disposable = APIStreams.getRestaurantDetail(restaurant_id,getString(R.string.api_google_place_key)).subscribeWith(new DisposableObserver<RestaurantDetail>() {
             @Override
@@ -132,16 +138,26 @@ public class NotificationsService extends FirebaseMessagingService {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 if (task.isSuccessful()) {
-                                    List<DocumentSnapshot> wormates_joining = task.getResult().getDocuments();
-                                    for (int i = 0; i<wormates_joining.size();i++){
-                                        User curent = wormates_joining.get(i).toObject(User.class);
-                                        Log.i(NETWORK, curent.getUsername());
-                                    }
+                                    wormatesJoining = task.getResult().getDocuments();
+                                    getWorkmatesJoining(wormatesJoining);
                                     sendVisualNotification(restaurant_name, restaurant_adress);
                                 }
                             }
                         });
             }
         });
+    }
+
+    // GET THE LIST OF WORKMATES JOINING IN STRING
+    private void getWorkmatesJoining(List<DocumentSnapshot> list){
+        int nbWorkmatesJoining = list.size()-1;
+        if (nbWorkmatesJoining > 0){
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i<list.size();i++){
+                if (!list.get(i).toObject(User.class).getUid().equals(FirebaseUtils.getCurrentUser().getUid())){
+                    sb.append(list.get(i).toObject(User.class).getUsername()+"\n");
+                }
+            } answerWorkmatesJoining = getString(R.string.notification_workmates_joining) + "\n" + sb.toString();
+        } else answerWorkmatesJoining = getString(R.string.notification_no_workmates);
     }
 }

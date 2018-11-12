@@ -111,12 +111,17 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         super.onViewCreated(view, savedInstanceState);
     }
 
-    //ACTIONS
+    // -------
+    // ACTIONS
+    // -------
+
+    // Center on User Location + Restaurant list updated
     @OnClick(R.id.fragment_map_view_my_location_floating_btn)
     public void goOnMyLocation() {
         centerMyLocation();
     }
 
+    // Chat Activity
     @OnClick(R.id.fragment_map_view_message_floating_btn)
     public void goChat() {
         Intent chat = new Intent(getActivity(),ChatActivity.class);
@@ -171,7 +176,9 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
 
     private void generateMarkersOnMap(){
         if (restaurant_list != null){
-            mMap.clear();
+            if (mMap != null){
+                mMap.clear();
+            }
             for (int i = 0; i<restaurant_list.size();i++) {
                 Double lat = restaurant_list.get(i).getGeometry().getLocation().getLat();
                 Double lng = restaurant_list.get(i).getGeometry().getLocation().getLng();

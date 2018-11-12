@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,8 +31,11 @@ import com.duboscq.nicolas.go4lunch.models.firebase.Message;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -140,15 +144,25 @@ public class ChatActivity extends AppCompatActivity implements ChatAdapter.Liste
         // A - UPLOAD TO GCS
         StorageReference mImageRef = FirebaseStorage.getInstance().getReference(uuid);
         mImageRef.putFile(this.uriImageSelected)
-                .addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                .continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        //String pathImageSavedInFirebase = taskSnapshot.getMetadata().getDownloadUrl().toString();
-                        // B - SAVE MESSAGE IN FIRESTORE
-                        //MessageHelper.createMessageWithImageForChat(pathImageSavedInFirebase, message, modelCurrentUser).addOnFailureListener(onFailureListener());
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()){
+                            throw task.getException();
+                        }
+                        return mImageRef.getDownloadUrl();
                     }
-                })
-                .addOnFailureListener(this.onFailureListener());
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()){
+                    Uri downUri = task.getResult();
+                    String pathImageSavedInFirebase = downUri.toString();
+                    // B - SAVE MESSAGE IN FIRESTORE
+                    MessageHelper.createMessageWithImageForChat(pathImageSavedInFirebase, message, modelCurrentUser).addOnFailureListener(onFailureListener());
+                }
+            }
+        });
     }
 
     // --------------------
