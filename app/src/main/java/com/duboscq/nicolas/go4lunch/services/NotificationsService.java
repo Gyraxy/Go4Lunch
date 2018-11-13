@@ -109,7 +109,7 @@ public class NotificationsService extends FirebaseMessagingService {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                 User currentUser = documentSnapshot.toObject(User.class);
-                chosenrestaurantId = currentUser.getLunch();
+                chosenrestaurantId = currentUser.getLunchId();
                 getRestaurantDetail(chosenrestaurantId);
             }
         });

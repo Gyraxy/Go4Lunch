@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.controllers.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.WorkmatesRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
+import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.duboscq.nicolas.go4lunch.utils.DividerItemDecoration;
@@ -93,7 +95,15 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener(){
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        Toast.makeText(getContext(),"Click",Toast.LENGTH_SHORT).show();
+                        String workmates_choice = workmatesRecyclerViewAdapter.getItem(position).getLunchDate();
+                        if (workmates_choice.equals(todayDate)){
+                            Intent i = new Intent(getActivity(),RestaurantActivity.class);
+                            i.putExtra("restaurant_id",workmatesRecyclerViewAdapter.getItem(position).getLunchId());
+                            i.putExtra("restaurant_image_url",workmatesRecyclerViewAdapter.getItem(position).getLunchUrl());
+                            startActivity(i);
+                        } else {
+                            Toast.makeText(getContext(),workmatesRecyclerViewAdapter.getItem(position).getUsername()+getString(R.string.workmates_not_decided),Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
     }

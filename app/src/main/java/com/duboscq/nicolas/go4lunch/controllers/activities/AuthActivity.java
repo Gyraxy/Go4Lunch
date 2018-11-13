@@ -300,7 +300,7 @@ public class AuthActivity extends AppCompatActivity implements EasyPermissions.P
                     String username = FirebaseUtils.getCurrentUser().getDisplayName();
                     String uid = FirebaseUtils.getCurrentUser().getUid();
 
-                    UserHelper.createUser(uid, username, urlPicture, "XXX", "XX-XX-XXXX", null).addOnFailureListener(onFailureListener());
+                    UserHelper.createUser(uid, username, urlPicture, "XXX","XXX", "XX-XX-XXXX", null).addOnFailureListener(onFailureListener());
                 } else {
 
                 }

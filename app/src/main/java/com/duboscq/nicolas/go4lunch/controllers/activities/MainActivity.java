@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User current_user = documentSnapshot.toObject(User.class);
-                        String your_lunch = current_user.getLunch();
+                        String your_lunch = current_user.getLunchId();
                         String your_lunch_url = current_user.getLunchUrl();
                         String your_lunch_date = current_user.getLunchDate();
                         if (your_lunch.equals("XXX") || !todayDate.equals(your_lunch_date)){

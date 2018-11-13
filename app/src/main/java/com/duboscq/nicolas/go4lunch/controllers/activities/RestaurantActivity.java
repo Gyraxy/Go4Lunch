@@ -198,7 +198,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
                 String user_uid = user.getUid();
-                String restaurant_chosen = user.getLunch();
+                String restaurant_chosen = user.getLunchId();
                 String date = user.getLunchDate();
                 if (!date.equals(todayDate)){
                     userChooseRestaurant(user_uid,restaurant_chosen,user);
@@ -284,14 +284,15 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     }
 
     private void userChooseRestaurant(String user_uid, String restaurant_chosen, User user){
-        UserHelper.updateUserLunch(user_uid,restaurant_id);
+        UserHelper.updateUserLunchId(user_uid,restaurant_id);
+        UserHelper.updateUserLunchName(user_uid,restaurant_name_http);
         UserHelper.updateUserLunchUrl(user_uid,restaurant_image_url);
         UserHelper.updateUserLunchDate(user_uid,todayDate);
         restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         if (!restaurant_chosen.equals(null)){
             RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,FirebaseUtils.getCurrentUser().getUid());
         }
-        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,todayDate,restaurant_image_url);
+        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,restaurant_name_http,todayDate,restaurant_image_url);
         SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
         Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
     }
@@ -326,7 +327,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
-                String restaurant_chosen = user.getLunch();
+                String restaurant_chosen = user.getLunchId();
                 String date_lunch = user.getLunchDate();
                 if (date_lunch.equals(todayDate) && restaurant_chosen.equals(restaurant_id)){
                     restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));

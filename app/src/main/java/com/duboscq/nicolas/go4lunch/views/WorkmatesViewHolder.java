@@ -40,12 +40,13 @@ public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User workmates = documentSnapshot.toObject(User.class);
                 String workmates_lunch_date = workmates.getLunchDate();
+                String workmates_lunch_name = workmates.getLunchName();
                 if (!workmates_lunch_date.equals(todayDate)){
                     answer = workmate_name + context.getString(R.string.workmates_not_decided);
                     workmates_answer_txt.setText(answer);
                     workmates_answer_txt.setTypeface(null, Typeface.ITALIC);
                 } else if (workmates_lunch_date.equals(todayDate)){
-                    answer = workmate_name + context.getString(R.string.workmates_is_eating);
+                    answer = workmate_name + context.getString(R.string.workmates_is_eating) + workmates_lunch_name + ".";
                     workmates_answer_txt.setText(answer);
                     workmates_answer_txt.setTypeface(null, Typeface.NORMAL);
                 }

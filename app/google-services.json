@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "345184267813-3hot9i0hsh0g7gb1b1k6adu9nckotk11.apps.googleusercontent.com",
+          "client_id": "345184267813-m9vn7735hjvik4do6jd3d6po6j9ot55d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.duboscq.nicolas.go4lunch",
-            "certificate_hash": "990c5048b13c7566c84f4d3706c6191aa1e38dd3"
+            "certificate_hash": "5007743c22500302c3f507613eea6afe640b2c26"
           }
         },
         {

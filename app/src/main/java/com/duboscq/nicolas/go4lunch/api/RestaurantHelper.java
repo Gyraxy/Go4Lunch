@@ -37,13 +37,13 @@ public class RestaurantHelper {
 
     // --- CREATE ---
 
-    public static Task<Void> createUserforRestaurant(String restaurant_uid, String uid, String username, String date, String urlPicture, String lunch, String lunch_date,String lunch_url){
-        User user = new User(uid, username, urlPicture, lunch, lunch_date, lunch_url);
+    public static Task<Void> createUserforRestaurant(String restaurant_uid, String uid, String username, String date, String urlPicture, String lunch_id, String lunch_name, String lunch_date,String lunch_url){
+        User user = new User(uid, username, urlPicture, lunch_id, lunch_name, lunch_date, lunch_url);
         return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection("users"+date).document(uid).set(user);
     }
 
     public static Task<Void> addUserLiketoRestaurant(String restaurant_uid, String uid) {
-        User user = new User(uid, "XXX", "XXX", "XXX", "XX-XX-XXXX", "XXX");
+        User user = new User(uid, "XXX", "XXX", "XXX", "XXX", "XX-XX-XXXX", "XXX");
         return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection("like").document(uid).set(user);
     }
 

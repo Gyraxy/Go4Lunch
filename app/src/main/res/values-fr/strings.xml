@@ -52,7 +52,7 @@
     <string name="title_activity_maps">Map</string>
 
     <!-- WORKMATES LIST VIEW-->
-    <string name="workmates_is_eating">" mange."</string>
+    <string name="workmates_is_eating">" mange à "</string>
     <string name="workmates_not_decided">" ne s'est pas décidé encore."</string>
     <string name="workmates_fragment_no_workmates">Aucuns collègues enregistrés</string>
 
