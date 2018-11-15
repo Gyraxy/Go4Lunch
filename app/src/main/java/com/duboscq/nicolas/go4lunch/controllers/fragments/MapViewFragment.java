@@ -74,7 +74,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     Location mLastLocation;
     String my_location, updated_location, restaurantPictureUrl;
     List<Result> restaurant_list, updated_restaurant_list;
-    List<Integer> workmates_list;
     RestaurantViewModel mModel;
     private Disposable disposable;
     String key, NETWORK = "NETWORK";
@@ -98,9 +97,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 Log.i("MAP",restaurant_list.size()+"");
                 if (!results.isEmpty()){
                     restaurant_list = mModel.getRestaurantResult().getValue();
-                    workmates_list = new ArrayList<>();
                     getListWorkmatesJoining();
-                    generateMarkersOnMap();
                     onClickMarker();
                 } else Toast.makeText(getContext(),getString(R.string.no_restaurant_found),Toast.LENGTH_SHORT).show();
             }
@@ -184,23 +181,18 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         }
     }
 
-    private void generateMarkersOnMap(){
-        if (restaurant_list != null){
-            if (mMap != null){
-                mMap.clear();
-                Log.i("MAP","Marker Map Clear");
-            }
-            for (int i = 0; i<restaurant_list.size();i++) {
-                Log.i("MAP","Generate New Markers");
-                Double lat = restaurant_list.get(i).getGeometry().getLocation().getLat();
-                Double lng = restaurant_list.get(i).getGeometry().getLocation().getLng();
-                LatLng restaurant_position = new LatLng(lat, lng);
-                String restaurant_name = restaurant_list.get(i).getName();
+    private void generateMarkersOnMap(Result restaurantResult, boolean isEmpty){
 
-                if (restaurant_list.get(i).getPhotos() != null) {
-                    if (restaurant_list.get(i).getPhotos().get(0).getPhotoReference() != null){
+                Log.i("MAP","Generate New Markers");
+                Double lat = restaurantResult.getGeometry().getLocation().getLat();
+                Double lng = restaurantResult.getGeometry().getLocation().getLng();
+                LatLng restaurant_position = new LatLng(lat, lng);
+                String restaurant_name = restaurantResult.getName();
+
+                if (restaurantResult.getPhotos() != null) {
+                    if (restaurantResult.getPhotos().get(0).getPhotoReference() != null){
                         restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
-                                restaurant_list.get(i).getPhotos().get(0).getPhotoReference()+
+                                restaurantResult.getPhotos().get(0).getPhotoReference()+
                                 "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
                     }
                 } else restaurantPictureUrl = null;
@@ -208,12 +200,13 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(restaurant_position);
                 markerOptions.title(restaurant_name);
+                if (isEmpty){
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                } else markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 Marker m = mMap.addMarker(markerOptions);
-                mHashMapId.put(m, restaurant_list.get(i).getPlaceId());
+                mHashMapId.put(m, restaurantResult.getPlaceId());
                 mHashMapPhoto.put(m, restaurantPictureUrl);
             }
-        }
-    }
 
     private void onClickMarker(){
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -256,20 +249,28 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     }
 
     private void getListWorkmatesJoining(){
-        for (int i=0 ; i<restaurant_list.size(); i++){
-            RestaurantHelper.getWorkmatesJoining(restaurant_list.get(i).getPlaceId(), DateUtility.getDateTime())
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                if (task.getResult().getDocuments().isEmpty()) {
-                                    workmates_list.add(0);
-                                } else {
-                                    workmates_list.add(task.getResult().getDocuments().size());
+        if (restaurant_list != null) {
+            if (mMap != null) {
+                mMap.clear();
+                Log.i("MAP", "Marker Map Clear");
+            }
+            for (int i = 0; i < restaurant_list.size(); i++) {
+                int finalI = i;
+                RestaurantHelper.getWorkmatesJoining(restaurant_list.get(i).getPlaceId(), DateUtility.getDateTime())
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    if (task.getResult().getDocuments().isEmpty()) {
+                                        generateMarkersOnMap(restaurant_list.get(finalI),true);
+                                    } else {
+                                        generateMarkersOnMap(restaurant_list.get(finalI),false);
+                                    }
+
                                 }
                             }
-                        }
-                    });
+                        });
+            }
         }
     }
 
