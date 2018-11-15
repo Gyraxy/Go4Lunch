@@ -22,11 +22,14 @@ import android.widget.Toast;
 
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
+import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.controllers.activities.ChatActivity;
+import com.duboscq.nicolas.go4lunch.controllers.activities.MainActivity;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,7 +40,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +74,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     Location mLastLocation;
     String my_location, updated_location, restaurantPictureUrl;
     List<Result> restaurant_list, updated_restaurant_list;
+    List<Integer> workmates_list;
     RestaurantViewModel mModel;
     private Disposable disposable;
     String key, NETWORK = "NETWORK";
@@ -88,11 +95,14 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(@Nullable List<Result> results) {
-                if (results != null){
+                Log.i("MAP",restaurant_list.size()+"");
+                if (!results.isEmpty()){
                     restaurant_list = mModel.getRestaurantResult().getValue();
+                    workmates_list = new ArrayList<>();
+                    getListWorkmatesJoining();
                     generateMarkersOnMap();
                     onClickMarker();
-                }
+                } else Toast.makeText(getContext(),getString(R.string.no_restaurant_found),Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -178,8 +188,10 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         if (restaurant_list != null){
             if (mMap != null){
                 mMap.clear();
+                Log.i("MAP","Marker Map Clear");
             }
             for (int i = 0; i<restaurant_list.size();i++) {
+                Log.i("MAP","Generate New Markers");
                 Double lat = restaurant_list.get(i).getGeometry().getLocation().getLat();
                 Double lng = restaurant_list.get(i).getGeometry().getLocation().getLng();
                 LatLng restaurant_position = new LatLng(lat, lng);
@@ -196,10 +208,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(restaurant_position);
                 markerOptions.title(restaurant_name);
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
                 Marker m = mMap.addMarker(markerOptions);
-
                 mHashMapId.put(m, restaurant_list.get(i).getPlaceId());
                 mHashMapPhoto.put(m, restaurantPictureUrl);
             }
@@ -244,6 +253,24 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 mModel.setNewRestaurantResult(updated_restaurant_list);
             }
         });
+    }
+
+    private void getListWorkmatesJoining(){
+        for (int i=0 ; i<restaurant_list.size(); i++){
+            RestaurantHelper.getWorkmatesJoining(restaurant_list.get(i).getPlaceId(), DateUtility.getDateTime())
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (task.getResult().getDocuments().isEmpty()) {
+                                    workmates_list.add(0);
+                                } else {
+                                    workmates_list.add(task.getResult().getDocuments().size());
+                                }
+                            }
+                        }
+                    });
+        }
     }
 
     // ------------------------------

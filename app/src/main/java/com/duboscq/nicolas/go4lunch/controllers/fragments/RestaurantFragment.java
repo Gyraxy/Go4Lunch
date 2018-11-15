@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
@@ -38,7 +39,8 @@ public class RestaurantFragment extends Fragment {
 
     //FOR DESIGN
     @BindView(R.id.fragment_restaurant_recycler_view) RecyclerView restaurant_recyclerView;
-    @BindView(R.id.fragment_restaurant_swipe_container) SwipeRefreshLayout restaurant_swipe_refresh ;
+    @BindView(R.id.fragment_restaurant_swipe_container) SwipeRefreshLayout restaurant_swipe_refresh;
+    @BindView(R.id.fragment_restaurant_recycler_view_empty) TextView no_restaurant_txt;
 
     //FOR DATA
     RestaurantListRecyclerViewAdapter adapter;
@@ -75,11 +77,14 @@ public class RestaurantFragment extends Fragment {
         mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(@Nullable List<Result> results) {
-                if (results != null){
+                if (!results.isEmpty()){
                     restaurant_list = mModel.getRestaurantResult().getValue();
+                    no_restaurant_txt.setVisibility(View.GONE);
                     configureRecyclerView();
                     configureOnClickRecyclerView();
                     configureSwipeRefreshLayout();
+                } else {
+                    restaurant_swipe_refresh.setEnabled(false);
                 }
             }
         });

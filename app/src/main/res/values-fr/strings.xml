@@ -7,6 +7,7 @@
     <!-- MAIN ACTIVITY -->
     <string name="search">Search</string>
     <string name="no_lunch_chosen">Vous n\'avez pas encore choisi de restaurant.</string>
+    <string name="no_restaurant_found">Il n\'y a aucun restaurant dans cette zone.</string>
 
     <!-- LOGIN ACTIVITY -->
     <string name="auth_subtitle">Find a nice restaurant and invite your co-workers for lunch !</string>

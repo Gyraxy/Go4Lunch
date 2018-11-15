@@ -11,17 +11,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class APIStreams {
-    public static Observable<RestaurantPlace> getRestaurantList(int radius,String key,String location){
+    public static Observable<RestaurantPlace> getRestaurantList(int radius, String key, String location) {
         APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
-        return apiInterface.getRestaurantList(radius,key,location)
+        return apiInterface.getRestaurantList(radius, key, location)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(10, TimeUnit.SECONDS);
     }
 
-    public static Observable<RestaurantDetail> getRestaurantDetail(String placeid, String key){
+    public static Observable<RestaurantDetail> getRestaurantDetail(String placeid, String key) {
         APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
-        return apiInterface.getRestaurantDetail(placeid,key)
+        return apiInterface.getRestaurantDetail(placeid, key)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .timeout(10, TimeUnit.SECONDS);

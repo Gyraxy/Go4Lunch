@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String NETWORK = "NETWORK";
     TextView profile_name_txt,profile_email_txt;
     MapViewFragment mapViewFragment;
