@@ -72,13 +72,12 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     FusedLocationProviderClient mFusedLocationClient;
     LatLng myLatLng;
     Location mLastLocation;
-    String my_location, updated_location, restaurantPictureUrl;
+    String my_location, updated_location;
     List<Result> restaurant_list, updated_restaurant_list;
     RestaurantViewModel mModel;
     private Disposable disposable;
     String key, NETWORK = "NETWORK";
     private HashMap<Marker, String> mHashMapId = new HashMap<>();
-    private HashMap<Marker, String> mHashMapPhoto = new HashMap<>();
 
 
     public MapViewFragment() {
@@ -99,7 +98,13 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                     restaurant_list = mModel.getRestaurantResult().getValue();
                     getListWorkmatesJoining();
                     onClickMarker();
-                } else Toast.makeText(getContext(),getString(R.string.no_restaurant_found),Toast.LENGTH_SHORT).show();
+                } else if (results.isEmpty()){
+                    if (mMap != null) {
+                        mMap.clear();
+                        Log.i("MAP", "Marker Map Clear");
+                    }
+                    Toast.makeText(getContext(),getString(R.string.no_restaurant_found),Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -189,14 +194,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 LatLng restaurant_position = new LatLng(lat, lng);
                 String restaurant_name = restaurantResult.getName();
 
-                if (restaurantResult.getPhotos() != null) {
-                    if (restaurantResult.getPhotos().get(0).getPhotoReference() != null){
-                        restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
-                                restaurantResult.getPhotos().get(0).getPhotoReference()+
-                                "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
-                    }
-                } else restaurantPictureUrl = null;
-
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(restaurant_position);
                 markerOptions.title(restaurant_name);
@@ -205,7 +202,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 } else markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 Marker m = mMap.addMarker(markerOptions);
                 mHashMapId.put(m, restaurantResult.getPlaceId());
-                mHashMapPhoto.put(m, restaurantPictureUrl);
             }
 
     private void onClickMarker(){
@@ -214,11 +210,9 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
             public boolean onMarkerClick(Marker marker) {
 
                 String restaurant_placeId = mHashMapId.get(marker);
-                String restaurant_url = mHashMapPhoto.get(marker);
 
                 Intent startRestaurantActivity = new Intent(getContext(), RestaurantActivity.class);
                 startRestaurantActivity.putExtra("restaurant_id", restaurant_placeId);
-                startRestaurantActivity.putExtra("restaurant_image_url",restaurant_url);
                 startActivity(startRestaurantActivity);
 
                 return false;

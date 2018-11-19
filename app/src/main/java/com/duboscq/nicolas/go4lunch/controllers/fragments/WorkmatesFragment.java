@@ -99,7 +99,6 @@ public class WorkmatesFragment extends Fragment implements WorkmatesRecyclerView
                         if (workmates_choice.equals(todayDate)){
                             Intent i = new Intent(getActivity(),RestaurantActivity.class);
                             i.putExtra("restaurant_id",workmatesRecyclerViewAdapter.getItem(position).getLunchId());
-                            i.putExtra("restaurant_image_url",workmatesRecyclerViewAdapter.getItem(position).getLunchUrl());
                             startActivity(i);
                         } else {
                             Toast.makeText(getContext(),workmatesRecyclerViewAdapter.getItem(position).getUsername()+getString(R.string.workmates_not_decided),Toast.LENGTH_SHORT).show();

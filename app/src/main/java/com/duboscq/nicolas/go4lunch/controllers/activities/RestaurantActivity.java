@@ -83,7 +83,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     String restaurant_id,restaurant_image_url;
     private Disposable disposable;
     String NETWORK = "NETWORK";
-    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id;
+    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id, restaurantPictureUrl;
     User modelCurrentUser;
     int nb_like;
     private static final int REQUEST_PHONE_CALL = 1;
@@ -98,13 +98,11 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         configureToolBar();
         disableButtonClick();
         restaurant_id = getIntent().getExtras().getString("restaurant_id",null);
-        restaurant_image_url = getIntent().getExtras().getString("restaurant_image_url",null);
         last_restaurant_chosen_id = SharedPreferencesUtility.getString(this,"LAST_RESTAURANT_CHOSEN");
         todayDate = DateUtility.getDateTime();
         checkRestaurantchosen();
-        configureAndShowRestaurantList();
+        httpRequestRestaurantDetail();
         this.getCurrentUserFromFirestore();
-        showPictureRestaurant();
         showRestaurantRating(restaurant_id);
         configureRecyclerView();
     }
@@ -211,46 +209,21 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         });
     }
 
-    public void configureAndShowRestaurantList() {
-        disposable = APIStreams.getRestaurantDetail(restaurant_id,getString(R.string.api_google_place_key)).subscribeWith(new DisposableObserver<RestaurantDetail>() {
-            @Override
-            public void onNext(RestaurantDetail restaurantDetail) {
-                Log.i(NETWORK, "RestauActivity : On Next");
-                restaurant_adress_http=restaurantDetail.getResult().getFormattedAddress();
-                restaurant_name_http=restaurantDetail.getResult().getName();
-                if (restaurantDetail.getResult().getWebsite() != null){
-                    restaurant_website_http=restaurantDetail.getResult().getWebsite();
-                } else restaurant_website_http = null;
-                if (restaurantDetail.getResult().getFormattedPhoneNumber() != null){
-                    restaurant_phone_http=restaurantDetail.getResult().getFormattedPhoneNumber();
-                } else restaurant_phone_http = null;
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.i(NETWORK, "RestauActivity : On Error " + Log.getStackTraceString(e));
-            }
-
-            @Override
-            public void onComplete() {
-                Log.i(NETWORK, "RestauActivity : On Complete !!");
-                restaurant_adress_txt.setText(restaurant_adress_http);
-                restaurant_name_txt.setText(restaurant_name_http);
-                restaurant_call_btn.setClickable(true);
-                restaurant_website_btn.setClickable(true);
-            }
-        });
-    }
-
-    public void showPictureRestaurant(){
-        if (restaurant_image_url != null){
-            Glide.with(this).load(restaurant_image_url).into(restaurant_picture_imv);
-        } else Glide.with(this).load(R.drawable.no_camera).into(restaurant_picture_imv);
-    }
-
     public void disableButtonClick(){
         restaurant_call_btn.setClickable(false);
         restaurant_website_btn.setClickable(false);
+    }
+
+    // --------------------
+    // RESTAURANT UI
+    // --------------------
+
+    public void updateRestaurantUI(){
+        restaurant_adress_txt.setText(restaurant_adress_http);
+        restaurant_name_txt.setText(restaurant_name_http);
+        if (restaurantPictureUrl != null){
+            Glide.with(this).load(restaurantPictureUrl).into(restaurant_picture_imv);
+        } else Glide.with(this).load(R.drawable.no_camera).into(restaurant_picture_imv);
     }
 
     private void showRestaurantRating(String restaurant_id) {
@@ -286,13 +259,12 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     private void userChooseRestaurant(String user_uid, String restaurant_chosen, User user){
         UserHelper.updateUserLunchId(user_uid,restaurant_id);
         UserHelper.updateUserLunchName(user_uid,restaurant_name_http);
-        UserHelper.updateUserLunchUrl(user_uid,restaurant_image_url);
         UserHelper.updateUserLunchDate(user_uid,todayDate);
         restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         if (!restaurant_chosen.equals(null)){
             RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,FirebaseUtils.getCurrentUser().getUid());
         }
-        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,restaurant_name_http,todayDate,restaurant_image_url);
+        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,restaurant_name_http,todayDate);
         SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
         Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
     }
@@ -336,6 +308,46 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         });
     }
 
+    // --------------------------
+    // RESTAURANT DETAIL HTTP GET
+    // --------------------------
+
+    public void httpRequestRestaurantDetail() {
+        disposable = APIStreams.getRestaurantDetail(restaurant_id,getString(R.string.api_google_place_key)).subscribeWith(new DisposableObserver<RestaurantDetail>() {
+            @Override
+            public void onNext(RestaurantDetail restaurantDetail) {
+                Log.i(NETWORK, "RestauActivity : On Next");
+                restaurant_adress_http = restaurantDetail.getResult().getFormattedAddress();
+                restaurant_name_http = restaurantDetail.getResult().getName();
+                if (restaurantDetail.getResult().getPhotos() != null) {
+                    if (restaurantDetail.getResult().getPhotos().get(0).getPhotoReference() != null) {
+                        restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" +
+                                restaurantDetail.getResult().getPhotos().get(0).getPhotoReference() +
+                                "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
+                    }
+                }
+                if (restaurantDetail.getResult().getWebsite() != null){
+                    restaurant_website_http=restaurantDetail.getResult().getWebsite();
+                } else restaurant_website_http = null;
+                if (restaurantDetail.getResult().getFormattedPhoneNumber() != null){
+                    restaurant_phone_http=restaurantDetail.getResult().getFormattedPhoneNumber();
+                } else restaurant_phone_http = null;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i(NETWORK, "RestauActivity : On Error " + Log.getStackTraceString(e));
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(NETWORK, "RestauActivity : On Complete !!");
+                updateRestaurantUI();
+                restaurant_call_btn.setClickable(true);
+                restaurant_website_btn.setClickable(true);
+            }
+        });
+    }
 
     // --------------------
     // CALLBACK

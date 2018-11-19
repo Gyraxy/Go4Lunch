@@ -10,18 +10,16 @@ public class User {
     @Nullable private String lunch_id;
     @Nullable private String lunch_name;
     @Nullable private String lunch_date;
-    @Nullable private String lunch_url;
 
     public User() { }
 
-    public User(String uid, String username, @Nullable String urlPicture, @Nullable String lunch_id, @Nullable String lunch_name, @Nullable String lunch_date, @Nullable String lunch_url) {
+    public User(String uid, String username, @Nullable String urlPicture, @Nullable String lunch_id, @Nullable String lunch_name, @Nullable String lunch_date) {
         this.uid = uid;
         this.username = username;
         this.urlPicture = urlPicture;
         this.lunch_id = lunch_id;
         this.lunch_name = lunch_name;
         this.lunch_date = lunch_date;
-        this.lunch_url = lunch_url;
     }
 
     // --- GETTERS ---
@@ -31,7 +29,6 @@ public class User {
     public @Nullable String getLunchId() { return lunch_id; }
     public @Nullable String getLunchName() { return lunch_name; }
     public @Nullable String getLunchDate() { return lunch_date; }
-    public @Nullable String getLunchUrl() { return lunch_url; }
 
     // --- SETTERS ---
     public void setUsername(String username) { this.username = username; }
@@ -40,5 +37,4 @@ public class User {
     public void setLunchId(@Nullable String lunch_id) { this.lunch_id = lunch_id; }
     public void setLunchName(@Nullable String lunch_name) { this.lunch_name = lunch_name; }
     public void setLunchDate(@Nullable String lunch_date) { this.lunch_date = lunch_date; }
-    public void setLunchUrl(@Nullable String lunch_url) { this.lunch_url = lunch_url; }
 }

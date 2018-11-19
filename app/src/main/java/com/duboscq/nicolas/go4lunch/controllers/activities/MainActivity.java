@@ -16,14 +16,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,15 +38,22 @@ import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModelFactory;
 import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.maps.android.SphericalUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -72,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final String NETWORK = "NETWORK";
     TextView profile_name_txt,profile_email_txt;
     MapViewFragment mapViewFragment;
@@ -80,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FragmentManager fragmentManager = getSupportFragmentManager();
     RestaurantViewModel mModel;
     String key,my_location,todayDate;
+    LatLng my_location_latlng;
     FusedLocationProviderClient mFusedLocationClient;
 
     @Override
@@ -131,9 +138,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint(getString(R.string.toolbar_search_query_hint));
+        //SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        //searchView.setQueryHint(getString(R.string.toolbar_search_query_hint));
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.activity_main_search:
+                showAutoCompleteFragment(my_location_latlng);
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // NAVIGATION DRAWER
@@ -163,14 +182,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User current_user = documentSnapshot.toObject(User.class);
                         String your_lunch = current_user.getLunchId();
-                        String your_lunch_url = current_user.getLunchUrl();
                         String your_lunch_date = current_user.getLunchDate();
                         if (your_lunch.equals("XXX") || !todayDate.equals(your_lunch_date)){
                             Toast.makeText(MainActivity.this,getString(R.string.no_lunch_chosen),Toast.LENGTH_SHORT).show();
                         } else if (todayDate.equals(your_lunch_date) && !your_lunch.equals("XXX")){
                             Intent i_lunch = new Intent(MainActivity.this,RestaurantActivity.class);
                             i_lunch.putExtra("restaurant_id",your_lunch);
-                            i_lunch.putExtra("restaurant_image_url",your_lunch_url);
                             startActivity(i_lunch);
                         }
                     }
@@ -274,6 +291,67 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    // ------------------
+    // AUTOCOMPLETE UTILS
+    // ------------------
+
+    public LatLngBounds toBounds(LatLng center, double radiusInMeters) {
+        double distanceFromCenterToCorner = radiusInMeters * Math.sqrt(2.0);
+        LatLng southwestCorner =
+                SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
+        LatLng northeastCorner =
+                SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
+        return new LatLngBounds(southwestCorner, northeastCorner);
+    }
+
+    private void  showAutoCompleteFragment (LatLng my_position) {
+        Intent intent = null;
+
+        LatLngBounds latLngBounds = toBounds(my_position,20);
+
+        AutocompleteFilter estabFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
+                .build();
+
+        AutocompleteFilter countryFilter = new AutocompleteFilter.Builder()
+                .setCountry("FR")
+                .build();
+        try {
+            intent = new PlaceAutocomplete
+                    .IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                    .setFilter(estabFilter)
+                    .setFilter(countryFilter)
+                    .setBoundsBias(latLngBounds)
+                    .build(this);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                String place_id = place.getId();
+                Intent restaurant_detail = new Intent(this, RestaurantActivity.class);
+                restaurant_detail.putExtra("restaurant_id",place_id);
+                startActivity(restaurant_detail);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i("APP", status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
+
     // -----
     // UTILS
     // -----
@@ -286,8 +364,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onSuccess(Location location) {
                     if (location != null) {
                         my_location = location.getLatitude() + "," + location.getLongitude();
+                        my_location_latlng = new LatLng(location.getLatitude(),location.getLongitude());
                         mModel = ViewModelProviders.of(MainActivity.this,new RestaurantViewModelFactory(key,my_location)).get(RestaurantViewModel.class);
                         initFragment(location.getLatitude(),location.getLongitude());
+
                     }
                 }
             });

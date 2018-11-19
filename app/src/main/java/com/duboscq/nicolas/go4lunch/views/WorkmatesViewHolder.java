@@ -16,16 +16,19 @@ import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class WorkmatesViewHolder extends RecyclerView.ViewHolder {
 
-    private ImageView workmates_profile_imv;
-    final private TextView workmates_answer_txt;
+    @BindView(R.id.workmates_profile_imv) ImageView workmates_profile_imv;
+    @BindView(R.id.workmates_answer_txt) TextView workmates_answer_txt;
+
     private String answer;
 
     public WorkmatesViewHolder(View itemView) {
         super(itemView);
-        workmates_profile_imv = itemView.findViewById(R.id.workmates_profile_imv);
-        workmates_answer_txt = itemView.findViewById(R.id.workmates_answer_txt);
+        ButterKnife.bind(this, itemView);
     }
 
     public void updateWorkmatesInfo(User user, RequestManager glide, final Context context,final String todayDate) {

@@ -83,7 +83,8 @@ public class RestaurantFragment extends Fragment {
                     configureRecyclerView();
                     configureOnClickRecyclerView();
                     configureSwipeRefreshLayout();
-                } else {
+                } else if (results.isEmpty()) {
+                    restaurant_recyclerView.setVisibility(View.GONE);
                     restaurant_swipe_refresh.setEnabled(false);
                 }
             }

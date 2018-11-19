@@ -15,7 +15,7 @@
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
     <string name="error_no_internet">Pas de connexion internet !</string>
     <string name="error_unknown_error">Une erreur est survenue&#8230;</string>
-    <string name="connection_succeed">Authentification réussi !</string>
+    <string name="connection_succeed">Authentification réussie !</string>
     <string name="auth_loggout">Vous avez été déconnecté </string>
     <string name="auth_imv_content_desc">Null</string>
 
