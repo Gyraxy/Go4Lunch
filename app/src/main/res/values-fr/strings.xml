@@ -100,6 +100,7 @@
     <string name="restaurant_chosen">"Vous avez choisi ce restaurant pour manger."</string>
     <string name="workmate_joining">" sera présent."</string>
     <string name="diag_like">"Vous avez déja ajouter un like à ce restaurant. Voulez-vous le supprimer ?"</string>
+    <string name="restaurant_open_hours">Horaire ouverture :</string>
 
     <!-- PERMISSION -->
     <string name="popup_title_permission_phone_access">L\'autorisation d\'accéder au téléphone est nécessaire pour réaliser cette action.</string>

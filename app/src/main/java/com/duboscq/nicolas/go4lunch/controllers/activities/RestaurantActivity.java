@@ -68,6 +68,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     @BindView(R.id.activity_restaurant_image_imv) ImageView restaurant_picture_imv;
     @BindView(R.id.activity_restaurant_name_txt) TextView restaurant_name_txt;
     @BindView(R.id.activity_restaurant_adress_txt) TextView restaurant_adress_txt;
+    @BindView(R.id.activity_restaurant_opening_hours_txt) TextView activity_restaurant_opening_hours_txt;
     @BindView(R.id.activity_restaurant_call_btn) Button restaurant_call_btn;
     @BindView(R.id.activity_restaurant_like_btn) Button restaurant_like_btn;
     @BindView(R.id.activity_restaurant_website_btn) Button restaurant_website_btn;
@@ -82,7 +83,8 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     //FOR DATA
     private Disposable disposable;
     String NETWORK = "NETWORK";
-    String restaurant_id, restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id, restaurantPictureUrl;
+    String restaurant_id, restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id, restaurantPictureUrl,restaurant_hours;
+    boolean restaurant_open;
     User modelCurrentUser;
     int nb_like;
     private static final int REQUEST_PHONE_CALL = 1;
@@ -227,6 +229,11 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         if (restaurantPictureUrl != null){
             Glide.with(this).load(restaurantPictureUrl).into(restaurant_picture_imv);
         } else Glide.with(this).load(R.drawable.no_camera).into(restaurant_picture_imv);
+        if (restaurant_open){
+            activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_open_hours)+restaurant_hours);
+        } else if (!restaurant_open){
+            activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_close));
+        }
     }
 
     private void showRestaurantRating(String restaurant_id) {
@@ -335,6 +342,10 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 if (restaurantDetail.getResult().getFormattedPhoneNumber() != null){
                     restaurant_phone_http=restaurantDetail.getResult().getFormattedPhoneNumber();
                 } else restaurant_phone_http = null;
+                if (restaurantDetail.getResult().getOpeningHours().getOpenNow()){
+                    restaurant_open = true;
+                    restaurant_hours = DateUtility.formatWeekDayText(restaurantDetail.getResult().getOpeningHours().getWeekdayText());
+                } else restaurant_open = false;
             }
 
             @Override

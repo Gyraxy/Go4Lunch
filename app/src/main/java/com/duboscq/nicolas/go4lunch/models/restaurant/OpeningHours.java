@@ -15,13 +15,11 @@ public class OpeningHours {
 
     @SerializedName("weekday_text")
     @Expose
-    private List<Object> weekdayText = new ArrayList<Object>();
+    private List<String> weekdayText = null;
 
-    // Constructor
-    public OpeningHours(Boolean openNow, List<Object> weekdayText) {
-        this.openNow = openNow;
-        this.weekdayText = weekdayText;
-    }
+    @SerializedName("periods")
+    @Expose
+    private List<Period> periods = null;
 
     // Getters & setters
 
@@ -33,12 +31,20 @@ public class OpeningHours {
         this.openNow = openNow;
     }
 
-    public List<Object> getWeekdayText() {
+    public List<String> getWeekdayText() {
         return weekdayText;
     }
 
-    public void setWeekdayText(List<Object> weekdayText) {
+    public void setWeekdayText(List<String> weekdayText) {
         this.weekdayText = weekdayText;
+    }
+
+    public List<Period> getPeriods() {
+        return periods;
+    }
+
+    public void setPeriods(List<Period> periods) {
+        this.periods = periods;
     }
 
 

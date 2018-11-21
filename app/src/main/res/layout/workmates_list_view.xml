@@ -12,8 +12,8 @@
 
         <ImageView
             android:id="@+id/workmates_profile_imv"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/fragment_workmates_profile_imv"
+            android:layout_height="@dimen/fragment_workmates_profile_imv"
             android:contentDescription="@string/auth_imv_content_desc"/>
 
     </LinearLayout>
@@ -29,7 +29,7 @@
             android:id="@+id/workmates_answer_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="@dimen/fragment_workmates_txt"
             android:maxLines="2"
             android:ellipsize="end"/>
 

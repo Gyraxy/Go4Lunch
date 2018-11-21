@@ -21,7 +21,7 @@
             android:layout_width="@dimen/logo_width"
             android:layout_height="@dimen/logo_width"
             android:src="@drawable/home_icon"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="@dimen/auth_logo_margin_bottom"
             android:contentDescription="@string/auth_imv_content_desc" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:text="@string/auth_subtitle"
             android:textSize="@dimen/auth_app_subtitle"
             android:textStyle="italic"
-            android:padding="5dp"
+            android:padding="@dimen/auth_padding_txtv"
             android:textColor="@color/WhiteColor"/>
 
     </LinearLayout>
@@ -61,7 +61,7 @@
             android:id="@+id/login_google_imv"
             android:layout_width="@dimen/auth_login_button_width"
             android:layout_height="@dimen/auth_login_button_height"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="@dimen/auth_margin_auth_logo"
             android:src="@drawable/google_login"
             android:contentDescription="@string/auth_imv_content_desc" />
 
