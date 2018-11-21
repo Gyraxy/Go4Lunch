@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,11 +30,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
+import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModelFactory;
 import com.duboscq.nicolas.go4lunch.utils.FirebaseUtils;
@@ -57,11 +62,16 @@ import com.google.maps.android.SphericalUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * Created by Nicolas DUBOSCQ on 27/09/2018
@@ -74,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_main_nav_bottom) BottomNavigationView bottomNavigationView;
     @BindView(R.id.activity_main_drawer) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
+    @BindView(R.id.activity_main_autocomplete_result_btn) Button autocomplete_result_btn;
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
@@ -88,6 +99,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String key,my_location,todayDate;
     LatLng my_location_latlng;
     FusedLocationProviderClient mFusedLocationClient;
+
+    //AUTOCOMPLETE
+    Disposable disposable;
+    Place autocomplete_place;
+    List<Result> autocomplete_result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.i(NETWORK,msg);
                     }
                 });
-
         key = getString(R.string.api_google_place_key);
         todayDate = getDateTime();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -114,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerLayout();
         configureNavigationView();
         configureBottomOnClick();
+        autocomplete_result_btn.setVisibility(View.GONE);
         updateProfileData();
         createModelViewAndInitFragment();
     }
@@ -336,11 +352,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                String place_id = place.getId();
-                Intent restaurant_detail = new Intent(this, RestaurantActivity.class);
-                restaurant_detail.putExtra("restaurant_id",place_id);
-                startActivity(restaurant_detail);
+                autocomplete_place = PlaceAutocomplete.getPlace(this, data);
+                httpRequestRestaurantAutoComplete();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.
@@ -350,6 +363,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // The user canceled the operation.
             }
         }
+    }
+
+    @OnClick (R.id.activity_main_autocomplete_result_btn)
+    public void cancelAutocomplete(){
+        autocomplete_result_btn.setText("");
+        autocomplete_result_btn.setVisibility(View.GONE);
+        mapViewFragment.getListWorkmatesJoining(mModel.getRestaurantResult().getValue());
+        restaurantFragment.configureRecyclerView(mModel.getRestaurantResult().getValue());
     }
 
     // -----
@@ -400,5 +421,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.FRANCE);
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    //HTTP GET AUTOCOMPLETE
+
+    public void httpRequestRestaurantAutoComplete() {
+        String autocomplete_place_txt = autocomplete_place.getLatLng().latitude + "," + autocomplete_place.getLatLng().longitude;
+        disposable = APIStreams.getRestaurantList(0.01,key,autocomplete_place_txt).subscribeWith(new DisposableObserver<RestaurantPlace>() {
+            @Override
+            public void onNext(RestaurantPlace restaurantPlace) {
+                Log.i(NETWORK, "ViewModel: On Next");
+                autocomplete_result = new ArrayList<>();
+                autocomplete_result = restaurantPlace.getResults();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i(NETWORK, "ViewModel : On Error " + Log.getStackTraceString(e));
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(NETWORK, "ViewModel : On Complete !!");
+                Log.i("AUTOCOMPLETE",autocomplete_result.get(0).getName());
+                autocomplete_result_btn.setVisibility(View.VISIBLE);
+                autocomplete_result_btn.setText(autocomplete_place.getName());
+                mapViewFragment.getListWorkmatesJoining(autocomplete_result);
+                restaurantFragment.configureRecyclerView(autocomplete_result);
+            }
+        });
     }
 }

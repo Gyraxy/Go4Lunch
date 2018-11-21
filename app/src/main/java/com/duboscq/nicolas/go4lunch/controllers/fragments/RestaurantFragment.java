@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,13 +79,18 @@ public class RestaurantFragment extends Fragment {
             @Override
             public void onChanged(@Nullable List<Result> results) {
                 if (!results.isEmpty()){
+                    Log.i("APP","Restaurant List not empty");
                     restaurant_list = mModel.getRestaurantResult().getValue();
                     no_restaurant_txt.setVisibility(View.GONE);
-                    configureRecyclerView();
+                    restaurant_recyclerView.setVisibility(View.VISIBLE);
+                    restaurant_swipe_refresh.setEnabled(true);
+                    configureRecyclerView(restaurant_list);
                     configureOnClickRecyclerView();
-                    configureSwipeRefreshLayout();
+                    configureSwipeRefreshLayout(restaurant_list);
                 } else if (results.isEmpty()) {
+                    Log.i("APP","Restaurant List empty");
                     restaurant_recyclerView.setVisibility(View.GONE);
+                    no_restaurant_txt.setVisibility(View.VISIBLE);
                     restaurant_swipe_refresh.setEnabled(false);
                 }
             }
@@ -104,7 +110,7 @@ public class RestaurantFragment extends Fragment {
 
     // RECYCLERVIEW CONFIGURATION
 
-    private void configureRecyclerView() {
+    public void configureRecyclerView(List<Result> restaurant_list) {
         this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),todayDate);
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -137,11 +143,11 @@ public class RestaurantFragment extends Fragment {
 
     //SWIPE CONFIGURATION
 
-    private void configureSwipeRefreshLayout() {
+    private void configureSwipeRefreshLayout(List<Result> restaurant_list) {
         restaurant_swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                configureRecyclerView();
+                configureRecyclerView(restaurant_list);
             }
         });
     }

@@ -80,10 +80,9 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
 
 
     //FOR DATA
-    String restaurant_id,restaurant_image_url;
     private Disposable disposable;
     String NETWORK = "NETWORK";
-    String restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id, restaurantPictureUrl;
+    String restaurant_id, restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id, restaurantPictureUrl;
     User modelCurrentUser;
     int nb_like;
     private static final int REQUEST_PHONE_CALL = 1;
@@ -203,7 +202,11 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 } else if (date.equals(todayDate) && !restaurant_id.equals(restaurant_chosen)){
                     userChooseRestaurant(user_uid,restaurant_chosen,user);
                 } else if (date.equals(todayDate) && restaurant_id.equals(restaurant_chosen)){
-                    Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_already_chosen),Toast.LENGTH_SHORT).show();
+                    RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,FirebaseUtils.getCurrentUser().getUid());
+                    UserHelper.updateUserLunchDate(FirebaseUtils.getCurrentUser().getUid(),"XX-XX-XXXX");
+                    UserHelper.updateUserLunchId(FirebaseUtils.getCurrentUser().getUid(),"XXX");
+                    UserHelper.updateUserLunchName(FirebaseUtils.getCurrentUser().getUid(),"XXX");
+                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.WhiteColor)));
                 }
             }
         });

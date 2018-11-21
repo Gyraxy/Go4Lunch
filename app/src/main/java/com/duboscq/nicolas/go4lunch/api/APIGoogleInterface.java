@@ -10,7 +10,7 @@ import retrofit2.http.Query;
 public interface APIGoogleInterface {
 
     @GET("nearbysearch/json?type=restaurant")
-    Observable<RestaurantPlace> getRestaurantList(@Query("radius") int radius,
+    Observable<RestaurantPlace> getRestaurantList(@Query("radius")double radius,
                                                   @Query("key") String key,
                                                   @Query("location") String location);
 

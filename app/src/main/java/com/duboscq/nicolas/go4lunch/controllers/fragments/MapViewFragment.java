@@ -32,6 +32,7 @@ import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -96,7 +97,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 Log.i("MAP",restaurant_list.size()+"");
                 if (!results.isEmpty()){
                     restaurant_list = mModel.getRestaurantResult().getValue();
-                    getListWorkmatesJoining();
+                    getListWorkmatesJoining(restaurant_list);
                     onClickMarker();
                 } else if (results.isEmpty()){
                     if (mMap != null) {
@@ -186,7 +187,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         }
     }
 
-    private void generateMarkersOnMap(Result restaurantResult, boolean isEmpty){
+    public void generateMarkersOnMap(Result restaurantResult, boolean isEmpty){
 
                 Log.i("MAP","Generate New Markers");
                 Double lat = restaurantResult.getGeometry().getLocation().getLat();
@@ -242,7 +243,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         });
     }
 
-    private void getListWorkmatesJoining(){
+    public void getListWorkmatesJoining(List<Result> restaurant_list){
         if (restaurant_list != null) {
             if (mMap != null) {
                 mMap.clear();

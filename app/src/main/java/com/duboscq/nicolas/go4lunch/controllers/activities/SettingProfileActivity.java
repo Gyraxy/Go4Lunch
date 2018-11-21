@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -75,8 +77,8 @@ public class SettingProfileActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         activity = getIntent().getExtras().getString("Activity");
         if (activity.equals("Settings")){
-            setSettingLayout();
             getLanguage();
+            setSettingLayout();
             getNotificationPreferences();
             configureToolBar();
         } else if (activity.equals("Profile")){
@@ -203,10 +205,10 @@ public class SettingProfileActivity extends AppCompatActivity {
 
     private void getLanguage(){
         language = SharedPreferencesUtility.getString(this,TAG_LANGUAGE);
-        if (language == null){
+        if (language.equals("")){
             radio_language = Locale.getDefault().getDisplayLanguage();
         } else radio_language = language;
-
+        Log.i("APP","the language is"+radio_language);
         switch (radio_language){
             case "français":
                 french_rbtn.setChecked(true);
@@ -214,8 +216,8 @@ public class SettingProfileActivity extends AppCompatActivity {
             case "English":
                 english_rbtn.setChecked(true);
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
     }
 
