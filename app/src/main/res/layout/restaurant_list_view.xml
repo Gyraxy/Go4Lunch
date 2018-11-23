@@ -88,19 +88,22 @@
                 android:id="@+id/restaurant_list_one_star_imv"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/star_border_ico"/>
+                android:src="@drawable/star_border_ico"
+                android:contentDescription="@string/auth_imv_content_desc" />
 
             <ImageView
                 android:id="@+id/restaurant_list_two_star_imv"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/star_border_ico"/>
+                android:src="@drawable/star_border_ico"
+                android:contentDescription="@string/auth_imv_content_desc"/>
 
             <ImageView
                 android:id="@+id/restaurant_list_three_star_imv"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:src="@drawable/star_border_ico"/>
+                android:src="@drawable/star_border_ico"
+                android:contentDescription="@string/auth_imv_content_desc"/>
 
         </LinearLayout>
 
@@ -116,7 +119,8 @@
         <ImageView
             android:id="@+id/restaurant_list_photo_imv"
             android:layout_width="70dp"
-            android:layout_height="70dp"/>
+            android:layout_height="70dp"
+            android:contentDescription="@string/auth_imv_content_desc"/>
 
     </LinearLayout>
 

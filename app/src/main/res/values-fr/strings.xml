@@ -19,11 +19,6 @@
     <string name="auth_loggout">Vous avez été déconnecté </string>
     <string name="auth_imv_content_desc">Null</string>
 
-
-    <!-- FACEBOOK PURPOSE -->
-    <string name="facebook_application_id" translatable="false">280804142565240</string>
-    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb280804142565240</string>
-
     <!-- NAVIGATION DRAWER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -106,5 +101,6 @@
     <string name="popup_title_permission_phone_access">L\'autorisation d\'accéder au téléphone est nécessaire pour réaliser cette action.</string>
     <string name="popup_title_permission_files_access">Autorisation requise pour fonctionner.</string>
     <string name="popup_title_permission_location_access">Cette application a besoin d\'utiliser la géolocalisation de votre téléphone. Acceptez-vous ?</string>
+    <string name="location_access_denied">La géolocalisation n\'est pas autorisée. Merci de le modifier.</string>
 
 </resources>

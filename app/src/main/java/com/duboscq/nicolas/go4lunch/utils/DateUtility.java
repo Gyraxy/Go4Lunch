@@ -2,7 +2,6 @@ package com.duboscq.nicolas.go4lunch.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Period;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;

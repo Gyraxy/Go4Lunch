@@ -16,7 +16,8 @@
         android:id="@+id/activity_restaurant_image_imv"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@+id/toolbar"/>
+        android:layout_below="@+id/toolbar"
+        android:contentDescription="@string/auth_imv_content_desc" />
 
     <LinearLayout
         android:id="@+id/activity_restaurant_detail_layout"
@@ -49,21 +50,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/star_border_ico"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:contentDescription="@string/auth_imv_content_desc" />
 
             <ImageView
                 android:id="@+id/activity_restaurant_two_star"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/star_border_ico"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:contentDescription="@string/auth_imv_content_desc" />
 
             <ImageView
                 android:id="@+id/activity_restaurant_three_star"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/star_border_ico"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:contentDescription="@string/auth_imv_content_desc" />
 
         </LinearLayout>
 

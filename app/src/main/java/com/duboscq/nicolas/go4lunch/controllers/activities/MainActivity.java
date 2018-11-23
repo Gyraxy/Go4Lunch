@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +35,6 @@ import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
-import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
@@ -69,7 +67,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 
@@ -84,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.activity_main_nav_bottom) BottomNavigationView bottomNavigationView;
     @BindView(R.id.activity_main_drawer) DrawerLayout drawerLayout;
     @BindView(R.id.activity_main_nav_view) NavigationView navigationView;
-    @BindView(R.id.activity_main_autocomplete_result_btn) Button autocomplete_result_btn;
 
     //FOR DATA
     private static final int SIGN_OUT_TASK = 10;
@@ -129,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerLayout();
         configureNavigationView();
         configureBottomOnClick();
-        autocomplete_result_btn.setVisibility(View.GONE);
         updateProfileData();
         createModelViewAndInitFragment();
     }
@@ -325,8 +320,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         LatLngBounds latLngBounds = toBounds(my_position,20);
 
-        AutocompleteFilter estabFilter = new AutocompleteFilter.Builder()
-                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
+        AutocompleteFilter addressFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
                 .build();
 
         AutocompleteFilter countryFilter = new AutocompleteFilter.Builder()
@@ -335,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try {
             intent = new PlaceAutocomplete
                     .IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                    .setFilter(estabFilter)
+                    .setFilter(addressFilter)
                     .setFilter(countryFilter)
                     .setBoundsBias(latLngBounds)
                     .build(this);
@@ -365,14 +360,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @OnClick (R.id.activity_main_autocomplete_result_btn)
-    public void cancelAutocomplete(){
-        autocomplete_result_btn.setText("");
-        autocomplete_result_btn.setVisibility(View.GONE);
-        mapViewFragment.getListWorkmatesJoining(mModel.getRestaurantResult().getValue());
-        restaurantFragment.configureRecyclerView(mModel.getRestaurantResult().getValue());
-    }
-
     // -----
     // UTILS
     // -----
@@ -393,6 +380,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         } else {
+            Toast.makeText(this,getString(R.string.location_access_denied),Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -443,9 +431,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onComplete() {
                 Log.i(NETWORK, "ViewModel : On Complete !!");
-                Log.i("AUTOCOMPLETE",autocomplete_result.get(0).getName());
-                autocomplete_result_btn.setVisibility(View.VISIBLE);
-                autocomplete_result_btn.setText(autocomplete_place.getName());
                 mapViewFragment.getListWorkmatesJoining(autocomplete_result);
                 restaurantFragment.configureRecyclerView(autocomplete_result);
             }

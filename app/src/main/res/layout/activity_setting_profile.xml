@@ -100,7 +100,8 @@
             android:id="@+id/activity_profile_image_imv"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp"
+            android:contentDescription="@string/auth_imv_content_desc" />
 
         <!-- PROGRESS BAR -->
         <ProgressBar

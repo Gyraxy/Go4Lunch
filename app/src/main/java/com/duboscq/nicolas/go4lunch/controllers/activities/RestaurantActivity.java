@@ -4,16 +4,11 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,7 +27,6 @@ import com.duboscq.nicolas.go4lunch.adapters.RestaurantWorkmatesRecyclerViewAdap
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.api.UserHelper;
-import com.duboscq.nicolas.go4lunch.models.firebase.Restaurant;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
@@ -42,16 +36,9 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,7 +71,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     private Disposable disposable;
     String NETWORK = "NETWORK";
     String restaurant_id, restaurant_adress_http, restaurant_name_http, restaurant_phone_http, restaurant_website_http,todayDate,last_restaurant_chosen_id, restaurantPictureUrl,restaurant_hours;
-    boolean restaurant_open;
+    String restaurant_open;
     User modelCurrentUser;
     int nb_like;
     private static final int REQUEST_PHONE_CALL = 1;
@@ -223,16 +210,26 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     // RESTAURANT UI
     // --------------------
 
-    public void updateRestaurantUI(){
+    public void updateRestaurantInfo(){
         restaurant_adress_txt.setText(restaurant_adress_http);
         restaurant_name_txt.setText(restaurant_name_http);
         if (restaurantPictureUrl != null){
             Glide.with(this).load(restaurantPictureUrl).into(restaurant_picture_imv);
         } else Glide.with(this).load(R.drawable.no_camera).into(restaurant_picture_imv);
-        if (restaurant_open){
-            activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_open_hours)+restaurant_hours);
-        } else if (!restaurant_open){
-            activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_close));
+
+        switch (restaurant_open){
+            case "OPEN":
+                activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_open_hours)+restaurant_hours);
+                break;
+            case "CLOSED":
+                activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_close));
+                break;
+            case "NO_INFO":
+                activity_restaurant_opening_hours_txt.setText(R.string.restaurant_no_opening_info);
+                break;
+                default:
+                    activity_restaurant_opening_hours_txt.setText(R.string.restaurant_no_opening_info);
+                    break;
         }
     }
 
@@ -266,17 +263,18 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
         });
     }
 
-    private void userChooseRestaurant(String user_uid, String restaurant_chosen, User user){
-        UserHelper.updateUserLunchId(user_uid,restaurant_id);
-        UserHelper.updateUserLunchName(user_uid,restaurant_name_http);
-        UserHelper.updateUserLunchDate(user_uid,todayDate);
-        restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-        if (!restaurant_chosen.equals(null)){
-            RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,FirebaseUtils.getCurrentUser().getUid());
-        }
-        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,restaurant_name_http,todayDate);
-        SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
-        Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
+    private void checkRestaurantchosen(){
+        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+                String restaurant_chosen = user.getLunchId();
+                String date_lunch = user.getLunchDate();
+                if (date_lunch.equals(todayDate) && restaurant_chosen.equals(restaurant_id)){
+                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                }
+            }
+        });
     }
 
     // --------------------
@@ -304,20 +302,6 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 .build();
     }
 
-    private void checkRestaurantchosen(){
-        UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                String restaurant_chosen = user.getLunchId();
-                String date_lunch = user.getLunchDate();
-                if (date_lunch.equals(todayDate) && restaurant_chosen.equals(restaurant_id)){
-                    restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-                }
-            }
-        });
-    }
-
     // --------------------------
     // RESTAURANT DETAIL HTTP GET
     // --------------------------
@@ -327,6 +311,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
             @Override
             public void onNext(RestaurantDetail restaurantDetail) {
                 Log.i(NETWORK, "RestauActivity : On Next");
+                Log.i(NETWORK,restaurantDetail.getResult().getPlaceId());
                 restaurant_adress_http = restaurantDetail.getResult().getFormattedAddress();
                 restaurant_name_http = restaurantDetail.getResult().getName();
                 if (restaurantDetail.getResult().getPhotos() != null) {
@@ -342,10 +327,18 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
                 if (restaurantDetail.getResult().getFormattedPhoneNumber() != null){
                     restaurant_phone_http=restaurantDetail.getResult().getFormattedPhoneNumber();
                 } else restaurant_phone_http = null;
-                if (restaurantDetail.getResult().getOpeningHours().getOpenNow()){
-                    restaurant_open = true;
-                    restaurant_hours = DateUtility.formatWeekDayText(restaurantDetail.getResult().getOpeningHours().getWeekdayText());
-                } else restaurant_open = false;
+                try {
+                    boolean isOpenNow = restaurantDetail.getResult().getOpeningHours().getOpenNow();
+                    if (isOpenNow) {
+                        restaurant_open = "OPEN";
+                        restaurant_hours = DateUtility.formatWeekDayText(restaurantDetail.getResult().getOpeningHours().getWeekdayText());
+                    } else {
+                        restaurant_open = "CLOSED";
+                    }
+                } catch (NullPointerException e) {
+                    Log.i(NETWORK,"No Opening Hours");
+                    restaurant_open = "NO_INFO";
+                }
             }
 
             @Override
@@ -356,7 +349,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
             @Override
             public void onComplete() {
                 Log.i(NETWORK, "RestauActivity : On Complete !!");
-                updateRestaurantUI();
+                updateRestaurantInfo();
                 restaurant_call_btn.setClickable(true);
                 restaurant_website_btn.setClickable(true);
             }
@@ -386,6 +379,7 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
     // --------------------
     // REST REQUESTS
     // --------------------
+
     private void getCurrentUserFromFirestore(){
         UserHelper.getUser(FirebaseUtils.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -394,6 +388,20 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
             }
         });
     }
+
+    private void userChooseRestaurant(String user_uid, String restaurant_chosen, User user){
+        UserHelper.updateUserLunchId(user_uid,restaurant_id);
+        UserHelper.updateUserLunchName(user_uid,restaurant_name_http);
+        UserHelper.updateUserLunchDate(user_uid,todayDate);
+        restaurant_selection.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        if (!restaurant_chosen.equals(null)){
+            RestaurantHelper.deleteUserInRestaurantList(restaurant_chosen,"users"+todayDate,FirebaseUtils.getCurrentUser().getUid());
+        }
+        RestaurantHelper.createUserforRestaurant(restaurant_id,user_uid,user.getUsername(),todayDate,user.getUrlPicture(),restaurant_id,restaurant_name_http,todayDate);
+        SharedPreferencesUtility.putString(RestaurantActivity.this,"LAST_RESTAURANT_CHOSEN",restaurant_id);
+        Toast.makeText(RestaurantActivity.this,getString(R.string.restaurant_chosen),Toast.LENGTH_SHORT).show();
+    }
+
 
     // --------------------
     // PHONECALL MANAGEMENT

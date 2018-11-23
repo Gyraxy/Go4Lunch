@@ -16,10 +16,6 @@ import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.models.firebase.Message;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

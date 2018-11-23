@@ -106,5 +106,6 @@
     <string name="popup_title_permission_phone_access">This application needs your permission to access to your phone to work properly.</string>
     <string name="popup_title_permission_files_access">This application needs your permission to work correctly.</string>
     <string name="popup_title_permission_location_access">This application needs your location. Do you accept ?</string>
+    <string name="location_access_denied">Location Access denied, please accept it.</string>
 
 </resources>

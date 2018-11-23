@@ -21,7 +21,8 @@
             android:id="@+id/activity_chat_item_profile_container_profile_image"
             android:layout_width="50dip"
             android:layout_height="50dip"
-            app:srcCompat="@drawable/ic_anon_user_48dp"/>
+            app:srcCompat="@drawable/ic_anon_user_48dp"
+            android:contentDescription="@string/auth_imv_content_desc"/>
 
     </LinearLayout>
 
@@ -46,7 +47,8 @@
                 android:id="@+id/activity_chat_item_message_container_image_sent_cardview_image"
                 android:layout_width="@dimen/chat_image_sent"
                 android:layout_height="@dimen/chat_image_sent"
-                android:scaleType="centerCrop"/>
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/auth_imv_content_desc" />
 
         </android.support.v7.widget.CardView>
 

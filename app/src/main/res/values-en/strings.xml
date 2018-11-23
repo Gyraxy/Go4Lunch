@@ -19,11 +19,6 @@
     <string name="auth_loggout">You have been disconnected</string>
     <string name="auth_imv_content_desc">Null</string>
 
-
-    <!-- FACEBOOK PURPOSE -->
-    <string name="facebook_application_id" translatable="false">280804142565240</string>
-    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb280804142565240</string>
-
     <!-- NAVIGATION DRAWER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -106,5 +101,6 @@
     <string name="popup_title_permission_phone_access">This application needs your permission to access to your phone to work properly.</string>
     <string name="popup_title_permission_files_access">This application needs your permission to work correctly.</string>
     <string name="popup_title_permission_location_access">This application needs your location. Do you accept ?</string>
+    <string name="location_access_denied">Location Access denied, please accept it.</string>
 
 </resources>

@@ -3,7 +3,6 @@ package com.duboscq.nicolas.go4lunch.models.restaurant;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OpeningHours {

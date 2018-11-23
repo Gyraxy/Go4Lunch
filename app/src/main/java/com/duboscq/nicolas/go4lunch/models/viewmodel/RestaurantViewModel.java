@@ -6,18 +6,13 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
-import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 
 import java.util.List;
 
-import io.reactivex.CompletableObserver;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
 
 public class RestaurantViewModel extends ViewModel {
 
@@ -51,6 +46,7 @@ public class RestaurantViewModel extends ViewModel {
             public void onNext(RestaurantPlace restaurantPlace) {
                 Log.i(NETWORK, "ViewModel: On Next");
                 restaurant_result.setValue(restaurantPlace.getResults());
+
             }
 
             @Override

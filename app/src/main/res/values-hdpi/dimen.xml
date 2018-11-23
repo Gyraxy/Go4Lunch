@@ -26,8 +26,6 @@
     <dimen name="fragment_workmates_txt">16sp</dimen>
 
     <!-- MAIN ACTIVITY -->
-    <dimen name="main_autocomplete_result_btn_width">200dp</dimen>
-    <dimen name="main_autocomplete_result_btn_margin_start">80dp</dimen>
     <dimen name="main_navigation_view_width">250dp</dimen>
     <dimen name="nav_view_title">30sp</dimen>
     <dimen name="nav_profile_image">60dp</dimen>

@@ -89,7 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/send_ic"
-            android:tint="@color/colorPrimary"/>
+            android:tint="@color/colorPrimary"
+            android:contentDescription="@string/auth_imv_content_desc" />
 
     </LinearLayout>
 
