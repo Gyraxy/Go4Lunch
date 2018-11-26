@@ -9,11 +9,13 @@ import retrofit2.http.Query;
 
 public interface APIGoogleInterface {
 
+    //API Interface for Google Place Nearby API
     @GET("nearbysearch/json?type=restaurant")
     Observable<RestaurantPlace> getRestaurantList(@Query("radius")double radius,
                                                   @Query("key") String key,
                                                   @Query("location") String location);
 
+    //API Interface for Google Place Detail API
     @GET("details/json")
     Observable<RestaurantDetail> getRestaurantDetail(@Query("placeid") String placeid,
                                                      @Query("key") String key);

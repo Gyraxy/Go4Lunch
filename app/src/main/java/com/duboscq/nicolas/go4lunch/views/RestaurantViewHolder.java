@@ -10,7 +10,8 @@ import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
-import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
+import com.duboscq.nicolas.go4lunch.utils.DateUtility;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -51,32 +52,50 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void updateRestaurantInfo(Result restaurantPlaceResult, double latB, double lngB, RequestManager glide, String todayDate) {
-        restaurant_name_txt.setText(restaurantPlaceResult.getName());
-        restaurant_address_txt.setText(restaurantPlaceResult.getVicinity());
-        getNumberOfWorkmatesJoining(restaurantPlaceResult,todayDate);
+    public void updateRestaurantInfo(RestaurantDetail restaurantDetail, double latB, double lngB, RequestManager glide, String todayDate) {
+
+        //Display Restaurant Name & Address
+        restaurant_name_txt.setText(restaurantDetail.getResult().getName());
+        restaurant_address_txt.setText(restaurantDetail.getResult().getVicinity());
+
+        //Get Number of Workmates joining to the restaurant
+        getNumberOfWorkmatesJoining(restaurantDetail,todayDate);
+
+        //Get Opening Information if available
         try {
-            boolean isOpenNow = restaurantPlaceResult.getOpeningHours().getOpenNow();
+            boolean isOpenNow = restaurantDetail.getResult().getOpeningHours().getOpenNow();
             if (isOpenNow) {
-                restaurant_openingTimes_txt.setText(R.string.restaurant_open);
+                try {
+                    String opening_hour = DateUtility.formatWeekDayText(restaurantDetail.getResult().getOpeningHours().getWeekdayText());
+                    if (opening_hour != null) {
+                        restaurant_openingTimes_txt.setText(R.string.restaurant_open + opening_hour);
+                    } else {
+                        restaurant_openingTimes_txt.setText(R.string.restaurant_open);
+                    }
+                }catch (NullPointerException e) {
+                        restaurant_openingTimes_txt.setText(R.string.restaurant_no_opening_info);
+                    }
             } else {
                 restaurant_openingTimes_txt.setText(R.string.restaurant_close);
             }
         } catch (NullPointerException e) {
             restaurant_openingTimes_txt.setText(R.string.restaurant_no_opening_info);
         }
-        if (restaurantPlaceResult.getPhotos() != null) {
-            if (restaurantPlaceResult.getPhotos().get(0).getPhotoReference() != null) {
+
+        //Display Photo if available
+        if (restaurantDetail.getResult().getPhotos() != null) {
+            if (restaurantDetail.getResult().getPhotos().get(0).getPhotoReference() != null) {
                 String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" +
-                        restaurantPlaceResult.getPhotos().get(0).getPhotoReference() +
+                        restaurantDetail.getResult().getPhotos().get(0).getPhotoReference() +
                         "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
                 glide.load(restaurantPictureUrl).into(restaurant_picture_imv);
             }
         } else glide.load(R.drawable.no_camera).into(restaurant_picture_imv);
 
+        //Calculate Distance between User and Restaurant in meter
         Location restaurant_location = new Location("point A");
-        restaurant_location.setLatitude(restaurantPlaceResult.getGeometry().getLocation().getLat());
-        restaurant_location.setLongitude(restaurantPlaceResult.getGeometry().getLocation().getLng());
+        restaurant_location.setLatitude(restaurantDetail.getResult().getGeometry().getLocation().getLat());
+        restaurant_location.setLongitude(restaurantDetail.getResult().getGeometry().getLocation().getLng());
 
         Location my_location = new Location("point B");
         my_location.setLatitude(latB);
@@ -89,7 +108,8 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         String restaurant_distance_stg = distance + " m";
         restaurant_distance_txt.setText(restaurant_distance_stg);
 
-        showRestaurantRating(restaurantPlaceResult.getPlaceId());
+        //Show Restaurant Rating
+        showRestaurantRating(restaurantDetail.getResult().getPlaceId());
     }
 
     private String formatDistance(double distance) {
@@ -127,8 +147,8 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    private void getNumberOfWorkmatesJoining(Result restaurantPlaceResult, String todayDate) {
-        RestaurantHelper.getWorkmatesJoining(restaurantPlaceResult.getPlaceId(),todayDate).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    private void getNumberOfWorkmatesJoining(RestaurantDetail restaurantDetail, String todayDate) {
+        RestaurantHelper.getWorkmatesJoining(restaurantDetail.getResult().getPlaceId(),todayDate).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                nb_wormates_joining = task.getResult().size();

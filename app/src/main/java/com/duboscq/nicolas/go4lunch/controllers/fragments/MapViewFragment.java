@@ -24,6 +24,7 @@ import com.duboscq.nicolas.go4lunch.api.APIStreams;
 import com.duboscq.nicolas.go4lunch.api.RestaurantHelper;
 import com.duboscq.nicolas.go4lunch.controllers.activities.ChatActivity;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
@@ -71,7 +72,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     LatLng myLatLng;
     Location mLastLocation;
     String my_location, updated_location;
-    List<Result> restaurant_list, updated_restaurant_list;
+    List<RestaurantDetail> restaurant_list, updated_restaurant_list;
     RestaurantViewModel mModel;
     private Disposable disposable;
     String key, NETWORK = "NETWORK";
@@ -88,9 +89,9 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         restaurant_list = new ArrayList<>();
         key = getString(R.string.api_google_place_key);
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
-        mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
+        mModel.getRestaurantResult().observe(this, new Observer<List<RestaurantDetail>>() {
             @Override
-            public void onChanged(@Nullable List<Result> results) {
+            public void onChanged(@Nullable List<RestaurantDetail> results) {
                 Log.i("MAP",restaurant_list.size()+"");
                 if (!results.isEmpty()){
                     restaurant_list = mModel.getRestaurantResult().getValue();
@@ -184,13 +185,13 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         }
     }
 
-    public void generateMarkersOnMap(Result restaurantResult, boolean isEmpty){
+    public void generateMarkersOnMap(RestaurantDetail restaurantDetail, boolean isEmpty){
 
                 Log.i("MAP","Generate New Markers");
-                Double lat = restaurantResult.getGeometry().getLocation().getLat();
-                Double lng = restaurantResult.getGeometry().getLocation().getLng();
+                Double lat = restaurantDetail.getResult().getGeometry().getLocation().getLat();
+                Double lng = restaurantDetail.getResult().getGeometry().getLocation().getLng();
                 LatLng restaurant_position = new LatLng(lat, lng);
-                String restaurant_name = restaurantResult.getName();
+                String restaurant_name = restaurantDetail.getResult().getName();
 
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(restaurant_position);
@@ -199,7 +200,7 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 } else markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 Marker m = mMap.addMarker(markerOptions);
-                mHashMapId.put(m, restaurantResult.getPlaceId());
+                mHashMapId.put(m, restaurantDetail.getResult().getPlaceId());
             }
 
     private void onClickMarker(){
@@ -219,12 +220,12 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     }
 
     private void loadNewRestaurantList(String location) {
-        disposable = APIStreams.getRestaurantList(20,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
+        disposable = APIStreams.getRestaurantListAndDetail(100,key,location).subscribeWith(new DisposableObserver<List<RestaurantDetail>>() {
             @Override
-            public void onNext(RestaurantPlace restaurantPlace) {
+            public void onNext(List<RestaurantDetail> restaurantDetails) {
                 Log.i(NETWORK, "MapViewFragment Updated List: On Next");
                 updated_restaurant_list = new ArrayList<>();
-                updated_restaurant_list.addAll(restaurantPlace.getResults());
+                updated_restaurant_list.addAll(restaurantDetails);
             }
 
             @Override
@@ -240,15 +241,15 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
         });
     }
 
-    public void getListWorkmatesJoining(List<Result> restaurant_list){
-        if (restaurant_list != null) {
+    public void getListWorkmatesJoining(List<RestaurantDetail> restaurant_details){
+        if (restaurant_details!= null) {
             if (mMap != null) {
                 mMap.clear();
                 Log.i("MAP", "Marker Map Clear");
             }
-            for (int i = 0; i < restaurant_list.size(); i++) {
+            for (int i = 0; i < restaurant_details.size(); i++) {
                 int finalI = i;
-                RestaurantHelper.getWorkmatesJoining(restaurant_list.get(i).getPlaceId(), DateUtility.getDateTime())
+                RestaurantHelper.getWorkmatesJoining(restaurant_details.get(i).getResult().getPlaceId(), DateUtility.getDateTime())
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {

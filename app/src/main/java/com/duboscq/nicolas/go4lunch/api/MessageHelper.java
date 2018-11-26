@@ -21,28 +21,30 @@ public class MessageHelper {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
+    //Get all the message created
     public static Query getMessageQuery(){
-        return FirebaseFirestore.getInstance()
-                .collection(COLLECTION_NAME)
+        return getCollectionChatCollection()
                 .orderBy("dateCreated")
                 .limit(50);
     }
 
+    // --- CREATE ---
+
+    //Create a message without any image
     public static Task<DocumentReference> createMessage(String textMessage, User userSender){
 
         Message message = new Message(textMessage, userSender);
 
-        return FirebaseFirestore.getInstance()
-                .collection(COLLECTION_NAME)
+        return getCollectionChatCollection()
                 .add(message);
     }
 
+    //Create a message with image
     public static Task<DocumentReference> createMessageWithImageForChat(String urlImage, String textMessage, User userSender){
 
         Message message = new Message(textMessage, urlImage, userSender);
 
-        return FirebaseFirestore.getInstance()
-                .collection(COLLECTION_NAME)
+        return getCollectionChatCollection()
                 .add(message);
     }
 }

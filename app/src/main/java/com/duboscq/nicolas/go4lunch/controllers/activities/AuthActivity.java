@@ -110,6 +110,7 @@ public class AuthActivity extends AppCompatActivity implements EasyPermissions.P
         Snackbar.make(linearLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 
+    //Update logo from sign in with to continue with
     private void logoUpdate(){
         String provider = checkProviderLogged();
         switch (provider) {

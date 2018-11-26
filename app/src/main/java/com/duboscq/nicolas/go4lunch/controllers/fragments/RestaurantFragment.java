@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.duboscq.nicolas.go4lunch.R;
 import com.duboscq.nicolas.go4lunch.adapters.RestaurantListRecyclerViewAdapter;
 import com.duboscq.nicolas.go4lunch.controllers.activities.RestaurantActivity;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.utils.DateUtility;
@@ -42,7 +43,7 @@ public class RestaurantFragment extends Fragment {
     //FOR DATA
     RestaurantListRecyclerViewAdapter adapter;
     RestaurantViewModel mModel;
-    List<Result> restaurant_list;
+    List<RestaurantDetail> restaurant_list;
     public static double user_lat,user_lng;
     final static String ARG_LAT = "ARG_LAT",ARG_LNG = "ARG_LNG";
     String todayDate;
@@ -71,9 +72,9 @@ public class RestaurantFragment extends Fragment {
         ButterKnife.bind(this, view);
         todayDate = DateUtility.getDateTime();
         mModel = ViewModelProviders.of(getActivity()).get(RestaurantViewModel.class);
-        mModel.getRestaurantResult().observe(this, new Observer<List<Result>>() {
+        mModel.getRestaurantResult().observe(this, new Observer<List<RestaurantDetail>>() {
             @Override
-            public void onChanged(@Nullable List<Result> results) {
+            public void onChanged(@Nullable List<RestaurantDetail> results) {
                 if (!results.isEmpty()){
                     Log.i("APP","Restaurant List not empty");
                     restaurant_list = mModel.getRestaurantResult().getValue();
@@ -106,7 +107,7 @@ public class RestaurantFragment extends Fragment {
 
     // RECYCLERVIEW CONFIGURATION
 
-    public void configureRecyclerView(List<Result> restaurant_list) {
+    public void configureRecyclerView(List<RestaurantDetail> restaurant_list) {
         this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),todayDate);
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -123,11 +124,11 @@ public class RestaurantFragment extends Fragment {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Intent i = new Intent(getActivity(), RestaurantActivity.class);
-                        i.putExtra("restaurant_id",restaurant_list.get(position).getPlaceId());
-                        if (restaurant_list.get(position).getPhotos() != null) {
-                            if (restaurant_list.get(position).getPhotos().get(0).getPhotoReference() != null){
+                        i.putExtra("restaurant_id",restaurant_list.get(position).getResult().getPlaceId());
+                        if (restaurant_list.get(position).getResult().getPhotos() != null) {
+                            if (restaurant_list.get(position).getResult().getPhotos().get(0).getPhotoReference() != null){
                                 String restaurantPictureUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+
-                                        restaurant_list.get(position).getPhotos().get(0).getPhotoReference()+
+                                        restaurant_list.get(position).getResult().getPhotos().get(0).getPhotoReference()+
                                         "&key=AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
                                 i.putExtra("restaurant_image_url",restaurantPictureUrl);
                             }
@@ -139,7 +140,7 @@ public class RestaurantFragment extends Fragment {
 
     //SWIPE CONFIGURATION
 
-    private void configureSwipeRefreshLayout(List<Result> restaurant_list) {
+    private void configureSwipeRefreshLayout(List<RestaurantDetail> restaurant_list) {
         restaurant_swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

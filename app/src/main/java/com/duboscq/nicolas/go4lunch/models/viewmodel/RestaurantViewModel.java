@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.duboscq.nicolas.go4lunch.api.APIStreams;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 
@@ -16,7 +17,7 @@ import io.reactivex.observers.DisposableObserver;
 
 public class RestaurantViewModel extends ViewModel {
 
-    private MutableLiveData<List<Result>> restaurant_result;
+    private MutableLiveData<List<RestaurantDetail>> restaurant_result;
     private Disposable disposable;
     private String NETWORK = "NETWORK";
     private String key,location;
@@ -26,7 +27,7 @@ public class RestaurantViewModel extends ViewModel {
         this.location = location;
     }
 
-    public LiveData<List<Result>> getRestaurantResult() {
+    public LiveData<List<RestaurantDetail>> getRestaurantResult() {
         if (restaurant_result == null) {
             restaurant_result= new MutableLiveData<>();
             loadRestaurantResult();
@@ -34,29 +35,28 @@ public class RestaurantViewModel extends ViewModel {
         return restaurant_result;
     }
 
-    public LiveData<List<Result>> setNewRestaurantResult(List<Result> new_result) {
+    public LiveData<List<RestaurantDetail>> setNewRestaurantResult(List<RestaurantDetail> new_result) {
         restaurant_result.setValue(new_result);
         return restaurant_result;
     }
 
     private void loadRestaurantResult() {
 
-        disposable = APIStreams.getRestaurantList(20,key,location).subscribeWith(new DisposableObserver<RestaurantPlace>() {
-            @Override
-            public void onNext(RestaurantPlace restaurantPlace) {
-                Log.i(NETWORK, "ViewModel: On Next");
-                restaurant_result.setValue(restaurantPlace.getResults());
+        disposable = APIStreams.getRestaurantListAndDetail(100,key,location).subscribeWith(new DisposableObserver<List<RestaurantDetail>>() {
 
+            @Override
+            public void onNext(List<RestaurantDetail> restaurantDetails) {
+                restaurant_result.setValue(restaurantDetails);
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.i(NETWORK, "ViewModel : On Error " + Log.getStackTraceString(e));
+
             }
 
             @Override
             public void onComplete() {
-                Log.i(NETWORK, "ViewModel : On Complete !!");
+
             }
         });
     }

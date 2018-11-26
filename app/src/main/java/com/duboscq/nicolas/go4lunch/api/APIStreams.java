@@ -14,6 +14,8 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class APIStreams {
+
+    //Stream to get the List of Restaurant around the user with a radius of radius meter
     public static Observable<RestaurantPlace> getRestaurantList(double radius, String key, String location) {
         APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
         return apiInterface.getRestaurantList(radius, key, location)
@@ -22,6 +24,7 @@ public class APIStreams {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
+    //Stream to get the detail of a Restaurant
     public static Observable<RestaurantDetail> getRestaurantDetail(String placeid, String key) {
         APIGoogleInterface apiInterface = RetrofitUtility.getInstance().create(APIGoogleInterface.class);
         return apiInterface.getRestaurantDetail(placeid, key)
@@ -30,6 +33,7 @@ public class APIStreams {
                 .timeout(10, TimeUnit.SECONDS);
     }
 
+    //Stream to get the List of Restaurant around the user and the detail for each restaurant found. Return a list of Detail Restaurant
     public static Observable<List<RestaurantDetail>> getRestaurantListAndDetail(double radius, String key, String location) {
         return getRestaurantList(radius, key, location)
                 .map(RestaurantPlace::getResults)

@@ -52,10 +52,13 @@ public class RestaurantHelper {
     }
 
     // --- DELETE ---
+
+    //Delete user in Restaurant List when user cancel his choice or choose another restaurant
     public static Task<Void> deleteUserInRestaurantList(String restaurant_uid, String users_date, String user_uid) {
         return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection(users_date).document(user_uid).delete();
     }
 
+    //Delete user like in restaurant list
     public static Task<Void> deleteUserLikeInRestaurantList(String restaurant_uid, String user_uid) {
         return RestaurantHelper.getRestaurantCollection().document(restaurant_uid).collection("like").document(user_uid).delete();
     }

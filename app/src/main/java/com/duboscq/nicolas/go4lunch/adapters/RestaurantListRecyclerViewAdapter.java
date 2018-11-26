@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.RequestManager;
 import com.duboscq.nicolas.go4lunch.R;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.views.RestaurantViewHolder;
 
@@ -16,12 +17,12 @@ import java.util.List;
 
 public class RestaurantListRecyclerViewAdapter extends RecyclerView.Adapter<RestaurantViewHolder> {
 
-    private List<Result> restaurant_place_result;
+    private List<RestaurantDetail> restaurant_place_result;
     private RequestManager glide;
     private double latB,lngB;
     private String todayDate;
 
-    public RestaurantListRecyclerViewAdapter(List<Result> result, double latB, double lngB, RequestManager glide, String todayDate) {
+    public RestaurantListRecyclerViewAdapter(List<RestaurantDetail> result, double latB, double lngB, RequestManager glide, String todayDate) {
         this.restaurant_place_result = result;
         this.latB = latB;
         this.lngB = lngB;

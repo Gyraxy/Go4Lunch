@@ -35,6 +35,7 @@ import com.duboscq.nicolas.go4lunch.controllers.fragments.MapViewFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.RestaurantFragment;
 import com.duboscq.nicolas.go4lunch.controllers.fragments.WorkmatesFragment;
 import com.duboscq.nicolas.go4lunch.models.firebase.User;
+import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantDetail;
 import com.duboscq.nicolas.go4lunch.models.restaurant.RestaurantPlace;
 import com.duboscq.nicolas.go4lunch.models.restaurant.Result;
 import com.duboscq.nicolas.go4lunch.models.viewmodel.RestaurantViewModel;
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //AUTOCOMPLETE
     Disposable disposable;
     Place autocomplete_place;
-    List<Result> autocomplete_result;
+    List<RestaurantDetail> autocomplete_result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -415,12 +416,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void httpRequestRestaurantAutoComplete() {
         String autocomplete_place_txt = autocomplete_place.getLatLng().latitude + "," + autocomplete_place.getLatLng().longitude;
-        disposable = APIStreams.getRestaurantList(0.01,key,autocomplete_place_txt).subscribeWith(new DisposableObserver<RestaurantPlace>() {
+        disposable = APIStreams.getRestaurantListAndDetail(0.01,key,autocomplete_place_txt).subscribeWith(new DisposableObserver<List<RestaurantDetail>>() {
             @Override
-            public void onNext(RestaurantPlace restaurantPlace) {
+            public void onNext(List<RestaurantDetail> restaurantDetails) {
                 Log.i(NETWORK, "ViewModel: On Next");
                 autocomplete_result = new ArrayList<>();
-                autocomplete_result = restaurantPlace.getResults();
+                autocomplete_result = restaurantDetails;
             }
 
             @Override
