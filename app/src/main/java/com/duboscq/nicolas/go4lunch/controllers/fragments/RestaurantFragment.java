@@ -108,7 +108,7 @@ public class RestaurantFragment extends Fragment {
     // RECYCLERVIEW CONFIGURATION
 
     public void configureRecyclerView(List<RestaurantDetail> restaurant_list) {
-        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),todayDate);
+        this.adapter = new RestaurantListRecyclerViewAdapter(restaurant_list,user_lat,user_lng,Glide.with(this),todayDate,getContext());
         this.restaurant_recyclerView.setAdapter(this.adapter);
         this.restaurant_recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(restaurant_recyclerView.getContext(), R.drawable.horizontal_divider);

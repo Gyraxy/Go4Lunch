@@ -1,8 +1,10 @@
 package com.duboscq.nicolas.go4lunch.views;
 
+import android.content.Context;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,7 +54,7 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
     }
 
-    public void updateRestaurantInfo(RestaurantDetail restaurantDetail, double latB, double lngB, RequestManager glide, String todayDate) {
+    public void updateRestaurantInfo(RestaurantDetail restaurantDetail, double latB, double lngB, RequestManager glide, String todayDate, Context context) {
 
         //Display Restaurant Name & Address
         restaurant_name_txt.setText(restaurantDetail.getResult().getName());
@@ -68,18 +70,20 @@ public class RestaurantViewHolder extends RecyclerView.ViewHolder {
                 try {
                     String opening_hour = DateUtility.formatWeekDayText(restaurantDetail.getResult().getOpeningHours().getWeekdayText());
                     if (opening_hour != null) {
-                        restaurant_openingTimes_txt.setText(R.string.restaurant_open + opening_hour);
+                        String restaurant_open = context.getString(R.string.restaurant_open) + " : " + opening_hour;
+                        Log.i("APP",restaurant_open);
+                        restaurant_openingTimes_txt.setText(restaurant_open);
                     } else {
-                        restaurant_openingTimes_txt.setText(R.string.restaurant_open);
+                        restaurant_openingTimes_txt.setText(context.getString(R.string.restaurant_open));
                     }
                 }catch (NullPointerException e) {
-                        restaurant_openingTimes_txt.setText(R.string.restaurant_no_opening_info);
+                        restaurant_openingTimes_txt.setText(context.getString(R.string.restaurant_no_opening_info));
                     }
             } else {
-                restaurant_openingTimes_txt.setText(R.string.restaurant_close);
+                restaurant_openingTimes_txt.setText(context.getString(R.string.restaurant_close));
             }
         } catch (NullPointerException e) {
-            restaurant_openingTimes_txt.setText(R.string.restaurant_no_opening_info);
+            restaurant_openingTimes_txt.setText(context.getString(R.string.restaurant_no_opening_info));
         }
 
         //Display Photo if available

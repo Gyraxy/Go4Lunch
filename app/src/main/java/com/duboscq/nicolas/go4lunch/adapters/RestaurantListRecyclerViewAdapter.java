@@ -1,5 +1,6 @@
 package com.duboscq.nicolas.go4lunch.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,13 +22,15 @@ public class RestaurantListRecyclerViewAdapter extends RecyclerView.Adapter<Rest
     private RequestManager glide;
     private double latB,lngB;
     private String todayDate;
+    private Context context;
 
-    public RestaurantListRecyclerViewAdapter(List<RestaurantDetail> result, double latB, double lngB, RequestManager glide, String todayDate) {
+    public RestaurantListRecyclerViewAdapter(List<RestaurantDetail> result, double latB, double lngB, RequestManager glide, String todayDate, Context context) {
         this.restaurant_place_result = result;
         this.latB = latB;
         this.lngB = lngB;
         this.glide = glide;
         this.todayDate = todayDate;
+        this.context = context;
     }
 
     @NonNull
@@ -40,7 +43,7 @@ public class RestaurantListRecyclerViewAdapter extends RecyclerView.Adapter<Rest
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantViewHolder holder, int position) {
-        holder.updateRestaurantInfo(this.restaurant_place_result.get(position),this.latB,this.lngB,this.glide,this.todayDate);
+        holder.updateRestaurantInfo(this.restaurant_place_result.get(position),this.latB,this.lngB,this.glide,this.todayDate,this.context);
     }
 
     @Override

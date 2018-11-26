@@ -53,8 +53,8 @@
     <string name="workmates_fragment_no_workmates">Aucuns collègues enregistrés</string>
 
     <!-- RESTAURANT LIST VIEW-->
-    <string name="restaurant_open">Ouvert Actuellement</string>
-    <string name="restaurant_close">Fermé Actuellement</string>
+    <string name="restaurant_open">Ouvert</string>
+    <string name="restaurant_close">Fermé</string>
     <string name="restaurant_no_opening_info">Pas d\'information sur horaire d\'ouverture</string>
 
     <!-- SETTING/PROFILE ACTIVITY-->
