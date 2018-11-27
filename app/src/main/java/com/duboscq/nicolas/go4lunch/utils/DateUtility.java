@@ -16,7 +16,7 @@ public class DateUtility {
     }
 
     public static String convertDateToHour(Date date){
-        DateFormat dfTime = new SimpleDateFormat("dd/MM-HH:mm");
+        DateFormat dfTime = new SimpleDateFormat("dd/MM-HH:mm",Locale.FRANCE);
         return dfTime.format(date);
     }
 

@@ -219,7 +219,8 @@ public class RestaurantActivity extends AppCompatActivity implements RestaurantW
 
         switch (restaurant_open){
             case "OPEN":
-                activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_open_hours)+restaurant_hours);
+                String open_hours = getString(R.string.restaurant_open_hours)+restaurant_hours;
+                activity_restaurant_opening_hours_txt.setText(open_hours);
                 break;
             case "CLOSED":
                 activity_restaurant_opening_hours_txt.setText(getString(R.string.restaurant_close));

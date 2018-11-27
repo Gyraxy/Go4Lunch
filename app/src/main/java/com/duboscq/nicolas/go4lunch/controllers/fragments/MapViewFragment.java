@@ -186,8 +186,6 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
     }
 
     public void generateMarkersOnMap(RestaurantDetail restaurantDetail, boolean isEmpty){
-
-                Log.i("MAP","Generate New Markers");
                 Double lat = restaurantDetail.getResult().getGeometry().getLocation().getLat();
                 Double lng = restaurantDetail.getResult().getGeometry().getLocation().getLng();
                 LatLng restaurant_position = new LatLng(lat, lng);
@@ -198,7 +196,11 @@ public class MapViewFragment extends Fragment implements GoogleMap.OnMyLocationB
                 markerOptions.title(restaurant_name);
                 if (isEmpty){
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                } else markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    Log.i("MAP","Markers RED");
+                } else if (!isEmpty){
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    Log.i("MAP","Markers GREEN");
+                }
                 Marker m = mMap.addMarker(markerOptions);
                 mHashMapId.put(m, restaurantDetail.getResult().getPlaceId());
             }

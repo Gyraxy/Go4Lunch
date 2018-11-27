@@ -119,7 +119,9 @@
             android:layout_below="@+id/activity_profile_image_imv"
             android:paddingTop="70dp"
             android:textSize="16sp"
-            style="@style/EditText"/>
+            style="@style/EditText"
+            android:labelFor="@+id/activity_profile_username_edt"
+            android:inputType="" />
 
         <TextView
             android:id="@+id/activity_profile_delete_txt"
