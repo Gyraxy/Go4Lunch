@@ -11,4 +11,5 @@
     <color name="colorRed">#FF5252</color>
     <color name="colorError">#FF5252</color>
     <color name="divider">#B7B7B7</color>
+    <color name="icon">#838383</color>
 </resources>

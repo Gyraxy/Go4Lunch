@@ -65,8 +65,9 @@
                 android:id="@+id/restaurant_list_people_imv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/auth_imv_content_desc"
                 android:src="@drawable/border_person_ico"
-                android:contentDescription="@string/auth_imv_content_desc"/>
+                android:tint="@color/icon"/>
 
             <TextView
                 android:id="@+id/restaurant_list_people_txt"

@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class GoogleAPITest {
 
     @Test
-    public void googleNearAPITest() throws Exception {
+    public void googleNearAPITest() {
 
         String key = "AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
         double radius = 20;
@@ -40,7 +40,7 @@ public class GoogleAPITest {
     }
 
     @Test
-    public void googleDetailAPITest() throws Exception {
+    public void googleDetailAPITest() {
 
         String key = "AIzaSyBiVX05PGFbUsnhdrcGX9UV0-xnTyv-PL4";
         String placeid = "ChIJL1X7ixpu5kcRHR7Ss0MYBtw";
